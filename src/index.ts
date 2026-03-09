@@ -3,6 +3,8 @@ import dotenv from 'dotenv'
 import path from 'path'
 import webhookRouter from './routes/webhook'
 import companiesRouter from './routes/companies'
+import authRouter from './routes/auth'
+import { authMiddleware } from './middleware/auth'
 
 dotenv.config()
 
@@ -12,7 +14,8 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname, '../public')))
 
 app.use('/webhook', webhookRouter)
-app.use('/companies', companiesRouter)
+app.use('/auth', authRouter)
+app.use('/companies', authMiddleware, companiesRouter)
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'))

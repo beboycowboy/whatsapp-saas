@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WhatsApp SaaS — Panel Admin</title>
+<title>WhatsApp SaaS — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,6 +21,25 @@
   header span { font-size: 13px; color: #94a3b8; }
 
   .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Login */
+  .login-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+  }
+  .login-box {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .login-box h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .login-box p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
 
   .stats {
     display: grid;
@@ -55,30 +74,11 @@
   }
   button:hover { opacity: 0.85; }
 
-  .btn-primary {
-    background: #3b82f6;
-    color: white;
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-  .btn-danger {
-    background: #ef4444;
-    color: white;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  .btn-success {
-    background: #22c55e;
-    color: white;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  .btn-secondary {
-    background: #e2e8f0;
-    color: #1e293b;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
+  .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; }
+  .btn-danger { background: #ef4444; color: white; padding: 6px 12px; font-size: 12px; }
+  .btn-success { background: #22c55e; color: white; padding: 6px 12px; font-size: 12px; }
+  .btn-secondary { background: #e2e8f0; color: #1e293b; padding: 6px 12px; font-size: 12px; }
+  .btn-logout { background: #475569; color: white; padding: 8px 16px; font-size: 13px; }
 
   table {
     width: 100%;
@@ -99,52 +99,17 @@
     letter-spacing: 0.5px;
     border-bottom: 1px solid #e2e8f0;
   }
-  td {
-    padding: 14px 16px;
-    font-size: 14px;
-    border-bottom: 1px solid #f1f5f9;
-  }
+  td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
   tr:last-child td { border-bottom: none; }
 
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-  }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .badge-active { background: #dcfce7; color: #16a34a; }
   .badge-inactive { background: #fee2e2; color: #dc2626; }
+  .type-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; background: #eff6ff; color: #3b82f6; }
 
-  .type-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 500;
-    background: #eff6ff;
-    color: #3b82f6;
-  }
-
-  /* Modal */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.active { display: flex; }
-  .modal {
-    background: white;
-    border-radius: 16px;
-    padding: 32px;
-    width: 100%;
-    max-width: 500px;
-    margin: 24px;
-  }
+  .modal { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; margin: 24px; }
   .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
 
   .form-group { margin-bottom: 16px; }
@@ -167,57 +132,75 @@
   .form-group textarea { height: 100px; resize: vertical; }
 
   .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-
   .empty { text-align: center; padding: 48px; color: #94a3b8; }
-  .empty p { font-size: 15px; margin-top: 8px; }
+  .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; }
 </style>
 </head>
 <body>
 
 <header>
   <h1>⚡ WhatsApp SaaS — Admin</h1>
-  <span id="fecha"></span>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span id="fecha"></span>
+    <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  </div>
 </header>
 
 <div class="container">
-  <div class="stats">
-    <div class="stat-card">
-      <div class="number" id="total-empresas">0</div>
-      <div class="label">Empresas activas</div>
-    </div>
-    <div class="stat-card">
-      <div class="number" id="total-conversaciones">0</div>
-      <div class="label">Conversaciones hoy</div>
-    </div>
-    <div class="stat-card">
-      <div class="number" id="total-ingresos">$0</div>
-      <div class="label">Ingresos mensuales est.</div>
+
+  <!-- LOGIN -->
+  <div class="login-wrap" id="login-section">
+    <div class="login-box">
+      <h2>🔐 Iniciar sesión</h2>
+      <p>Acceso exclusivo para administradores</p>
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="login-user" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
+      </div>
+      <p class="error-msg" id="login-error">Usuario o contraseña incorrectos</p>
+      <button class="btn-primary" style="width:100%;margin-top:8px" onclick="login()">Entrar</button>
     </div>
   </div>
 
-  <div class="section-header">
-    <h2>Empresas</h2>
-    <button class="btn-primary" onclick="abrirModal()">+ Nueva empresa</button>
-  </div>
+  <!-- PANEL -->
+  <div id="panel-section" style="display:none">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="number" id="total-empresas">0</div>
+        <div class="label">Empresas activas</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="total-conversaciones">0</div>
+        <div class="label">Conversaciones hoy</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="total-ingresos">$0</div>
+        <div class="label">Ingresos mensuales est.</div>
+      </div>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Empresa</th>
-        <th>Tipo</th>
-        <th>Número</th>
-        <th>Estado</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="tabla-empresas">
-      <tr>
-        <td colspan="5" class="empty">
-          <p>No hay empresas aún. ¡Agrega tu primer cliente!</p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="section-header">
+      <h2>Empresas</h2>
+      <button class="btn-primary" onclick="abrirModal()">+ Nueva empresa</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Tipo</th>
+          <th>Número</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-empresas"></tbody>
+    </table>
+  </div>
 </div>
 
 <!-- Modal nueva empresa -->
@@ -244,7 +227,7 @@
     </div>
     <div class="form-group">
       <label>Prompt / Instrucciones del bot</label>
-      <textarea id="input-prompt" placeholder="Eres el asistente virtual de Dentista García. Ayudas a agendar citas..."></textarea>
+      <textarea id="input-prompt" placeholder="Eres el asistente virtual de Dentista García..."></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
@@ -255,20 +238,63 @@
 
 <script>
   const API = window.location.origin
+  let token = localStorage.getItem('admin_token')
 
   document.getElementById('fecha').textContent = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
-  async function cargarEmpresas() {
-    const res = await fetch(`${API}/companies`)
-    const empresas = await res.json()
+  // Verificar si ya hay sesión
+  if (token) mostrarPanel()
 
+  async function login() {
+    const username = document.getElementById('login-user').value
+    const password = document.getElementById('login-pass').value
+
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      token = data.token
+      localStorage.setItem('admin_token', token)
+      mostrarPanel()
+    } else {
+      document.getElementById('login-error').style.display = 'block'
+    }
+  }
+
+  function mostrarPanel() {
+    document.getElementById('login-section').style.display = 'none'
+    document.getElementById('panel-section').style.display = 'block'
+    document.getElementById('btn-logout').style.display = 'block'
+    cargarEmpresas()
+  }
+
+  function logout() {
+    localStorage.removeItem('admin_token')
+    token = null
+    document.getElementById('login-section').style.display = 'flex'
+    document.getElementById('panel-section').style.display = 'none'
+    document.getElementById('btn-logout').style.display = 'none'
+  }
+
+  async function cargarEmpresas() {
+    const res = await fetch(`${API}/companies`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+
+    if (res.status === 401) { logout(); return; }
+
+    const empresas = await res.json()
     const activas = empresas.filter(e => e.active).length
     document.getElementById('total-empresas').textContent = activas
     document.getElementById('total-ingresos').textContent = `$${(activas * 800).toLocaleString()}`
 
     const tbody = document.getElementById('tabla-empresas')
     if (empresas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty"><p>No hay empresas aún. ¡Agrega tu primer cliente!</p></td></tr>`
+      tbody.innerHTML = `<tr><td colspan="5" class="empty">No hay empresas aún. ¡Agrega tu primer cliente!</td></tr>`
       return
     }
 
@@ -286,9 +312,7 @@
     `).join('')
   }
 
-  function abrirModal() {
-    document.getElementById('modal').classList.add('active')
-  }
+  function abrirModal() { document.getElementById('modal').classList.add('active') }
 
   function cerrarModal() {
     document.getElementById('modal').classList.remove('active')
@@ -303,14 +327,11 @@
     const phone = document.getElementById('input-phone').value
     const prompt = document.getElementById('input-prompt').value
 
-    if (!name || !phone || !prompt) {
-      alert('Por favor llena todos los campos')
-      return
-    }
+    if (!name || !phone || !prompt) { alert('Por favor llena todos los campos'); return }
 
     await fetch(`${API}/companies`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name, type, phone, prompt })
     })
 
@@ -321,7 +342,7 @@
   async function toggleEmpresa(id, active) {
     await fetch(`${API}/companies/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ active: !active })
     })
     cargarEmpresas()
@@ -329,11 +350,12 @@
 
   async function eliminarEmpresa(id) {
     if (!confirm('¿Seguro que quieres eliminar esta empresa?')) return
-    await fetch(`${API}/companies/${id}`, { method: 'DELETE' })
+    await fetch(`${API}/companies/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
     cargarEmpresas()
   }
-
-  cargarEmpresas()
 </script>
 </body>
 </html>
