@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp SaaS — Panel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
+  
+  header {
+    background: #1e293b;
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header span { font-size: 13px; color: #94a3b8; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e2e8f0;
+  }
+  .stat-card .number { font-size: 36px; font-weight: 700; color: #1e293b; }
+  .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .section-header h2 { font-size: 18px; font-weight: 600; }
+
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  button:hover { opacity: 0.85; }
+
+  .btn-primary {
+    background: #3b82f6;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .btn-danger {
+    background: #ef4444;
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .btn-success {
+    background: #22c55e;
+    color: white;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+  th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  td {
+    padding: 14px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-active { background: #dcfce7; color: #16a34a; }
+  .badge-inactive { background: #fee2e2; color: #dc2626; }
+
+  .type-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #eff6ff;
+    color: #3b82f6;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 500px;
+    margin: 24px;
+  }
+  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: #3b82f6; }
+  .form-group textarea { height: 100px; resize: vertical; }
+
+  .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+
+  .empty { text-align: center; padding: 48px; color: #94a3b8; }
+  .empty p { font-size: 15px; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ WhatsApp SaaS — Admin</h1>
+  <span id="fecha"></span>
+</header>
+
+<div class="container">
+  <div class="stats">
+    <div class="stat-card">
+      <div class="number" id="total-empresas">0</div>
+      <div class="label">Empresas activas</div>
+    </div>
+    <div class="stat-card">
+      <div class="number" id="total-conversaciones">0</div>
+      <div class="label">Conversaciones hoy</div>
+    </div>
+    <div class="stat-card">
+      <div class="number" id="total-ingresos">$0</div>
+      <div class="label">Ingresos mensuales est.</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h2>Empresas</h2>
+    <button class="btn-primary" onclick="abrirModal()">+ Nueva empresa</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Empresa</th>
+        <th>Tipo</th>
+        <th>Número</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-empresas">
+      <tr>
+        <td colspan="5" class="empty">
+          <p>No hay empresas aún. ¡Agrega tu primer cliente!</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal nueva empresa -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>Nueva empresa</h3>
+    <div class="form-group">
+      <label>Nombre del negocio</label>
+      <input type="text" id="input-name" placeholder="Ej: Dentista García">
+    </div>
+    <div class="form-group">
+      <label>Tipo de negocio</label>
+      <select id="input-type">
+        <option value="dentista">🦷 Dentista</option>
+        <option value="psicologo">🧠 Psicólogo</option>
+        <option value="estetica">✂️ Estética / Barbería</option>
+        <option value="veterinaria">🐾 Veterinaria</option>
+        <option value="nutriologo">🥗 Nutriólogo</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Número de WhatsApp (Twilio)</label>
+      <input type="text" id="input-phone" placeholder="+14155238886">
+    </div>
+    <div class="form-group">
+      <label>Prompt / Instrucciones del bot</label>
+      <textarea id="input-prompt" placeholder="Eres el asistente virtual de Dentista García. Ayudas a agendar citas..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarEmpresa()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = window.location.origin
+
+  document.getElementById('fecha').textContent = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+
+  async function cargarEmpresas() {
+    const res = await fetch(`${API}/companies`)
+    const empresas = await res.json()
+
+    const activas = empresas.filter(e => e.active).length
+    document.getElementById('total-empresas').textContent = activas
+    document.getElementById('total-ingresos').textContent = `$${(activas * 800).toLocaleString()}`
+
+    const tbody = document.getElementById('tabla-empresas')
+    if (empresas.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty"><p>No hay empresas aún. ¡Agrega tu primer cliente!</p></td></tr>`
+      return
+    }
+
+    tbody.innerHTML = empresas.map(e => `
+      <tr>
+        <td><strong>${e.name}</strong></td>
+        <td><span class="type-badge">${e.type}</span></td>
+        <td>${e.phone}</td>
+        <td><span class="badge ${e.active ? 'badge-active' : 'badge-inactive'}">${e.active ? 'Activo' : 'Inactivo'}</span></td>
+        <td style="display:flex;gap:8px">
+          <button class="btn-${e.active ? 'danger' : 'success'}" onclick="toggleEmpresa('${e.id}', ${e.active})">${e.active ? 'Desactivar' : 'Activar'}</button>
+          <button class="btn-danger" onclick="eliminarEmpresa('${e.id}')">Eliminar</button>
+        </td>
+      </tr>
+    `).join('')
+  }
+
+  function abrirModal() {
+    document.getElementById('modal').classList.add('active')
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal').classList.remove('active')
+    document.getElementById('input-name').value = ''
+    document.getElementById('input-phone').value = ''
+    document.getElementById('input-prompt').value = ''
+  }
+
+  async function guardarEmpresa() {
+    const name = document.getElementById('input-name').value
+    const type = document.getElementById('input-type').value
+    const phone = document.getElementById('input-phone').value
+    const prompt = document.getElementById('input-prompt').value
+
+    if (!name || !phone || !prompt) {
+      alert('Por favor llena todos los campos')
+      return
+    }
+
+    await fetch(`${API}/companies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, type, phone, prompt })
+    })
+
+    cerrarModal()
+    cargarEmpresas()
+  }
+
+  async function toggleEmpresa(id, active) {
+    await fetch(`${API}/companies/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active: !active })
+    })
+    cargarEmpresas()
+  }
+
+  async function eliminarEmpresa(id) {
+    if (!confirm('¿Seguro que quieres eliminar esta empresa?')) return
+    await fetch(`${API}/companies/${id}`, { method: 'DELETE' })
+    cargarEmpresas()
+  }
+
+  cargarEmpresas()
+</script>
+</body>
+</html>
