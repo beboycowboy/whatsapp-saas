@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import webhookRouter from './routes/webhook'
+import companiesRouter from './routes/companies'
 
 dotenv.config()
 
@@ -9,6 +10,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 app.use('/webhook', webhookRouter)
+app.use('/companies', companiesRouter)
 
 app.get('/', (req, res) => {
   res.send('WhatsApp SaaS funcionando ✅')
