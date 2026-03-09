@@ -5,15 +5,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 })
 
-export async function getAIResponse(message: string, from: string): Promise<string> {
+export async function getAIResponse(message: string, from: string, systemPrompt?: string): Promise<string> {
   try {
     const history = await getHistory(from)
 
     const messages = [
       {
         role: 'system' as const,
-        content: `Eres un asistente de atención al cliente amable y profesional. 
-        Responde siempre en español de forma concisa y útil.`
+        content: systemPrompt || 'Eres un asistente de atención al cliente amable y profesional. Responde siempre en español de forma concisa y útil.'
       },
       ...history.map(h => ({
         role: h.role as 'user' | 'assistant',
@@ -33,7 +32,6 @@ export async function getAIResponse(message: string, from: string): Promise<stri
 
     const aiResponse = response.choices[0].message.content || 'No pude procesar tu mensaje.'
 
-    // guardar historial actualizado
     await saveHistory(from, [
       ...history,
       { role: 'user', content: message },
