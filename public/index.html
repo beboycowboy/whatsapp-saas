@@ -45,7 +45,6 @@
 
   .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
 
-  /* Login */
   .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 80vh; }
   .login-box {
     background: white; border-radius: 16px; padding: 40px;
@@ -55,13 +54,11 @@
   .login-box h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
   .login-box p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
 
-  /* Stats */
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
   .stat-card .number { font-size: 32px; font-weight: 700; }
   .stat-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
 
-  /* Buttons */
   button { cursor: pointer; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.2s; }
   button:hover { opacity: 0.85; }
   .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; }
@@ -71,7 +68,6 @@
   .btn-logout { background: #475569; color: white; padding: 8px 16px; font-size: 13px; }
   .btn-sm { padding: 5px 10px; font-size: 11px; }
 
-  /* Table */
   table { width: 100%; background: white; border-radius: 12px; border: 1px solid #e2e8f0; border-collapse: collapse; overflow: hidden; }
   th { background: #f8fafc; padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
   td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
@@ -88,7 +84,6 @@
   .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .section-header h2 { font-size: 18px; font-weight: 600; }
 
-  /* Calendar */
   .calendar-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
   .calendar-nav { display: flex; align-items: center; gap: 12px; }
   .calendar-nav button { background: white; border: 1px solid #e2e8f0; color: #1e293b; padding: 8px 14px; font-size: 14px; border-radius: 8px; }
@@ -103,23 +98,14 @@
   .time-label { background: #f8fafc; padding: 4px 8px; min-height: 48px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #94a3b8; font-weight: 500; }
 
   .appointment-block {
-    background: #3b82f6;
-    color: white;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    line-height: 1.3;
-    transition: opacity 0.2s;
+    background: #3b82f6; color: white; border-radius: 6px; padding: 4px 8px;
+    font-size: 11px; font-weight: 500; cursor: pointer; width: 100%;
+    text-align: left; line-height: 1.3; transition: opacity 0.2s;
   }
   .appointment-block:hover { opacity: 0.85; }
   .appointment-block.cancelled { background: #ef4444; }
   .appointment-block.completed { background: #22c55e; }
 
-  /* Modal */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.active { display: flex; }
   .modal { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; margin: 24px; max-height: 90vh; overflow-y: auto; }
@@ -133,6 +119,7 @@
   }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #3b82f6; }
   .form-group textarea { height: 80px; resize: vertical; }
+  .form-divider { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
 
   .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
   .empty { text-align: center; padding: 48px; color: #94a3b8; }
@@ -140,6 +127,16 @@
 
   .page { display: none; }
   .page.active { display: block; }
+
+  .credentials-box {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #166534;
+    margin-top: 4px;
+  }
 
   @media (max-width: 768px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
@@ -154,9 +151,9 @@
 <header>
   <h1>⚡ WhatsApp SaaS</h1>
   <div class="nav-tabs" id="nav-tabs" style="display:none">
-    <button class="nav-tab active" onclick="showPage('empresas')">Empresas</button>
-    <button class="nav-tab" onclick="showPage('agenda')">Agenda</button>
-    <button class="nav-tab" onclick="showPage('conversaciones')">Conversaciones</button>
+    <button class="nav-tab active" onclick="showPage('empresas', event)">Empresas</button>
+    <button class="nav-tab" onclick="showPage('agenda', event)">Agenda</button>
+    <button class="nav-tab" onclick="showPage('conversaciones', event)">Conversaciones</button>
   </div>
   <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
 </header>
@@ -182,7 +179,7 @@
   </div>
 
   <!-- EMPRESAS -->
-  <div id="page-empresas" class="page active" style="display:none">
+  <div id="page-empresas" class="page" style="display:none">
     <div class="stats">
       <div class="stat-card">
         <div class="number" id="total-empresas">0</div>
@@ -210,11 +207,11 @@
     <table>
       <thead>
         <tr>
-          <th>Empresa</th><th>Tipo</th><th>Número</th><th>Estado</th><th>Acciones</th>
+          <th>Empresa</th><th>Tipo</th><th>Número</th><th>Usuario</th><th>Estado</th><th>Acciones</th>
         </tr>
       </thead>
       <tbody id="tabla-empresas">
-        <tr><td colspan="5" class="empty">No hay empresas aún</td></tr>
+        <tr><td colspan="6" class="empty">No hay empresas aún</td></tr>
       </tbody>
     </table>
   </div>
@@ -232,10 +229,7 @@
       </select>
       <button class="btn-primary" onclick="abrirModalCita()">+ Nueva cita</button>
     </div>
-
-    <div class="week-grid" id="week-grid">
-      <div class="week-header"></div>
-    </div>
+    <div class="week-grid" id="week-grid"></div>
   </div>
 
   <!-- CONVERSACIONES -->
@@ -262,9 +256,9 @@
 <div class="modal-overlay" id="modal-empresa">
   <div class="modal">
     <h3>Nueva empresa</h3>
-    <div class="form-group"><label>Nombre</label><input type="text" id="input-name" placeholder="Dentista García"></div>
+    <div class="form-group"><label>Nombre del negocio</label><input type="text" id="input-name" placeholder="Dentista García"></div>
     <div class="form-group">
-      <label>Tipo</label>
+      <label>Tipo de negocio</label>
       <select id="input-type">
         <option value="dentista">🦷 Dentista</option>
         <option value="psicologo">🧠 Psicólogo</option>
@@ -273,8 +267,15 @@
         <option value="nutriologo">🥗 Nutriólogo</option>
       </select>
     </div>
-    <div class="form-group"><label>Número WhatsApp</label><input type="text" id="input-phone" placeholder="whatsapp:+14155238886"></div>
-    <div class="form-group"><label>Prompt del bot</label><textarea id="input-prompt" placeholder="Eres el asistente de..."></textarea></div>
+    <div class="form-group"><label>Número WhatsApp (Twilio)</label><input type="text" id="input-phone" placeholder="whatsapp:+14155238886"></div>
+    <div class="form-group"><label>Prompt del bot</label><textarea id="input-prompt" placeholder="Eres el asistente virtual de..."></textarea></div>
+    <hr class="form-divider">
+    <div class="form-group">
+      <label>Usuario (para que el cliente entre a su panel)</label>
+      <input type="text" id="input-username" placeholder="dentistagarcía">
+      <div class="credentials-box" style="margin-top:8px">🔗 El cliente entrará en: <strong>tu-url.railway.app/cliente.html</strong></div>
+    </div>
+    <div class="form-group"><label>Contraseña inicial del cliente</label><input type="text" id="input-password" placeholder="cambiar123"></div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="cerrarModal('modal-empresa')">Cancelar</button>
       <button class="btn-primary" onclick="guardarEmpresa()">Guardar</button>
@@ -287,22 +288,17 @@
   <div class="modal">
     <h3 id="modal-cita-titulo">Nueva cita</h3>
     <div class="form-group"><label>Empresa</label>
-      <select id="cita-empresa">
-        <option value="">Selecciona empresa</option>
-      </select>
+      <select id="cita-empresa"><option value="">Selecciona empresa</option></select>
     </div>
     <div class="form-group"><label>Nombre del cliente</label><input type="text" id="cita-nombre" placeholder="Juan García"></div>
     <div class="form-group"><label>Teléfono del cliente</label><input type="text" id="cita-telefono" placeholder="+521234567890"></div>
     <div class="form-group"><label>Fecha</label><input type="date" id="cita-fecha"></div>
     <div class="form-group"><label>Hora</label>
       <select id="cita-hora">
-        <option value="09:00">09:00</option><option value="09:30">09:30</option>
-        <option value="10:00">10:00</option><option value="10:30">10:30</option>
-        <option value="11:00">11:00</option><option value="11:30">11:30</option>
-        <option value="12:00">12:00</option><option value="12:30">12:30</option>
-        <option value="15:00">15:00</option><option value="15:30">15:30</option>
-        <option value="16:00">16:00</option><option value="16:30">16:30</option>
-        <option value="17:00">17:00</option><option value="17:30">17:30</option>
+        <option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option>
+        <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
+        <option>15:00</option><option>15:30</option><option>16:00</option><option>16:30</option>
+        <option>17:00</option><option>17:30</option>
       </select>
     </div>
     <div class="form-group"><label>Servicio</label><input type="text" id="cita-servicio" placeholder="Consulta general"></div>
@@ -368,13 +364,11 @@
     document.querySelectorAll('.page').forEach(p => p.style.display = 'none')
   }
 
-  function showPage(page) {
-    document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; p.classList.remove('active') })
+  function showPage(page, event) {
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none')
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'))
     document.getElementById(`page-${page}`).style.display = 'block'
-    document.getElementById(`page-${page}`).classList.add('active')
-    event?.target?.classList.add('active')
-
+    if (event?.target) event.target.classList.add('active')
     if (page === 'agenda') cargarAgenda()
     if (page === 'conversaciones') cargarConversaciones()
   }
@@ -388,7 +382,6 @@
     document.getElementById('total-empresas').textContent = activas
     document.getElementById('total-ingresos').textContent = `$${(activas * 800).toLocaleString()}`
 
-    // Actualizar selects
     const options = empresas.map(e => `<option value="${e.id}">${e.name}</option>`).join('')
     document.getElementById('empresa-select').innerHTML = `<option value="">Selecciona empresa</option>${options}`
     document.getElementById('conv-empresa-select').innerHTML = `<option value="">Todas las empresas</option>${options}`
@@ -396,7 +389,7 @@
 
     const tbody = document.getElementById('tabla-empresas')
     if (empresas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty">No hay empresas aún</td></tr>`
+      tbody.innerHTML = `<tr><td colspan="6" class="empty">No hay empresas aún</td></tr>`
       return
     }
     tbody.innerHTML = empresas.map(e => `
@@ -404,6 +397,7 @@
         <td><strong>${e.name}</strong></td>
         <td><span class="type-badge">${e.type}</span></td>
         <td style="font-size:12px;color:#64748b">${e.phone}</td>
+        <td><code style="font-size:12px;background:#f1f5f9;padding:2px 8px;border-radius:4px">${e.username}</code></td>
         <td><span class="badge ${e.active ? 'badge-active' : 'badge-inactive'}">${e.active ? 'Activo' : 'Inactivo'}</span></td>
         <td style="display:flex;gap:8px">
           <button class="btn-${e.active ? 'danger' : 'success'} btn-sm" onclick="toggleEmpresa('${e.id}', ${e.active})">${e.active ? 'Desactivar' : 'Activar'}</button>
@@ -413,7 +407,6 @@
     `).join('')
   }
 
-  // ===== AGENDA =====
   async function cargarAgenda() {
     const companyId = document.getElementById('empresa-select').value
     const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
@@ -425,9 +418,6 @@
       d.setDate(d.getDate() + i)
       weekDays.push(d)
     }
-
-    const start = weekDays[0].toISOString().split('T')[0]
-    const end = weekDays[6].toISOString().split('T')[0]
 
     document.getElementById('semana-label').textContent =
       `${weekDays[0].getDate()} ${weekDays[0].toLocaleString('es-MX', {month:'short'})} — ${weekDays[6].getDate()} ${weekDays[6].toLocaleString('es-MX', {month:'short', year:'numeric'})}`
@@ -458,12 +448,9 @@
           const citaDate = new Date(c.date).toISOString().split('T')[0]
           return citaDate === dateStr && c.time === hora
         })
-
         html += `<div class="time-slot" onclick="abrirModalCitaFecha('${dateStr}', '${hora}')">`
         citasSlot.forEach(c => {
-          html += `<button class="appointment-block ${c.status}" onclick="event.stopPropagation();editarCita('${c.id}')">
-            ${c.clientName}<br>${c.service}
-          </button>`
+          html += `<button class="appointment-block ${c.status}" onclick="event.stopPropagation();editarCita('${c.id}')">${c.clientName}<br>${c.service}</button>`
         })
         html += `</div>`
       })
@@ -477,32 +464,19 @@
     cargarAgenda()
   }
 
-  // ===== CONVERSACIONES =====
   async function cargarConversaciones() {
-    const companyId = document.getElementById('conv-empresa-select').value
-    let url = companyId ? `${API}/companies/${companyId}/conversations` : `${API}/companies/conversations/all`
-    
-    // Por ahora cargamos de todas las empresas
     const tbody = document.getElementById('tabla-conversaciones')
-    tbody.innerHTML = `<tr><td colspan="5" class="empty">Cargando...</td></tr>`
-
-    try {
-      const res = await fetch(`${API}/companies`, { headers: { 'Authorization': `Bearer ${token}` } })
-      const comps = await res.json()
-      
-      let todasConvs = []
-      for (const comp of comps) {
-        const r = await fetch(`${API}/appointments/${comp.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
-      }
-
-      tbody.innerHTML = `<tr><td colspan="5" class="empty">Próximamente — conversaciones en tiempo real</td></tr>`
-    } catch(e) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty">Error cargando conversaciones</td></tr>`
-    }
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">Próximamente</td></tr>`
   }
 
-  // ===== MODALES =====
-  function abrirModalEmpresa() { document.getElementById('modal-empresa').classList.add('active') }
+  function abrirModalEmpresa() {
+    document.getElementById('input-name').value = ''
+    document.getElementById('input-phone').value = ''
+    document.getElementById('input-prompt').value = ''
+    document.getElementById('input-username').value = ''
+    document.getElementById('input-password').value = ''
+    document.getElementById('modal-empresa').classList.add('active')
+  }
 
   function abrirModalCita() {
     editingCitaId = null
@@ -519,7 +493,6 @@
   }
 
   async function editarCita(id) {
-    // Buscar cita en todas las empresas
     for (const emp of empresas) {
       const res = await fetch(`${API}/appointments/${emp.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
       const citas = await res.json()
@@ -541,20 +514,20 @@
     }
   }
 
-  function cerrarModal(id) {
-    document.getElementById(id).classList.remove('active')
-  }
+  function cerrarModal(id) { document.getElementById(id).classList.remove('active') }
 
   async function guardarEmpresa() {
     const name = document.getElementById('input-name').value
     const type = document.getElementById('input-type').value
     const phone = document.getElementById('input-phone').value
     const prompt = document.getElementById('input-prompt').value
-    if (!name || !phone || !prompt) { alert('Llena todos los campos'); return }
+    const username = document.getElementById('input-username').value
+    const password = document.getElementById('input-password').value
+    if (!name || !phone || !prompt || !username || !password) { alert('Llena todos los campos'); return }
     await fetch(`${API}/companies`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ name, type, phone, prompt })
+      body: JSON.stringify({ name, type, phone, prompt, username, password })
     })
     cerrarModal('modal-empresa')
     cargarEmpresas()
@@ -568,9 +541,7 @@
     const time = document.getElementById('cita-hora').value
     const service = document.getElementById('cita-servicio').value
     const notes = document.getElementById('cita-notas').value
-
     if (!companyId || !clientName || !date) { alert('Llena los campos obligatorios'); return }
-
     if (editingCitaId) {
       await fetch(`${API}/appointments/${editingCitaId}`, {
         method: 'PUT',
@@ -589,8 +560,7 @@
   }
 
   async function cancelarCitaActual() {
-    if (!editingCitaId) return
-    if (!confirm('¿Cancelar esta cita?')) return
+    if (!editingCitaId || !confirm('¿Cancelar esta cita?')) return
     await fetch(`${API}/appointments/${editingCitaId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
