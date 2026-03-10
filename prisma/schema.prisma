@@ -17,6 +17,7 @@ model Company {
   createdAt DateTime @default(now())
   
   conversations Conversation[]
+  appointments  Appointment[]
 }
 
 model Conversation {
@@ -26,6 +27,21 @@ model Conversation {
   message   String   @db.Text
   response  String   @db.Text
   createdAt DateTime @default(now())
+  
+  company Company @relation(fields: [companyId], references: [id])
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  companyId   String
+  clientPhone String
+  clientName  String
+  date        DateTime
+  time        String
+  service     String
+  status      String   @default("confirmed") // confirmed, cancelled, completed
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
   
   company Company @relation(fields: [companyId], references: [id])
 }

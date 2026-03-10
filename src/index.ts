@@ -4,6 +4,7 @@ import path from 'path'
 import webhookRouter from './routes/webhook'
 import companiesRouter from './routes/companies'
 import authRouter from './routes/auth'
+import appointmentsRouter from './routes/appointments'
 import { authMiddleware } from './middleware/auth'
 
 dotenv.config()
@@ -16,6 +17,7 @@ app.use(express.static(path.join(__dirname, '../public')))
 app.use('/webhook', webhookRouter)
 app.use('/auth', authRouter)
 app.use('/companies', authMiddleware, companiesRouter)
+app.use('/appointments', authMiddleware, appointmentsRouter)
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'))
