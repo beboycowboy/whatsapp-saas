@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Agenda</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
+
+  header {
+    background: #1e293b;
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header-info h2 { font-size: 16px; font-weight: 700; }
+  .header-info span { font-size: 12px; color: #94a3b8; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+
+  .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
+  .login-box {
+    background: white; border-radius: 16px; padding: 40px;
+    width: 100%; max-width: 380px; border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06); text-align: center;
+  }
+  .login-box .logo { font-size: 48px; margin-bottom: 16px; }
+  .login-box h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .login-box p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: white; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; text-align: center; }
+  .stat-card .number { font-size: 28px; font-weight: 700; color: #3b82f6; }
+  .stat-card .label { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+
+  .citas-lista { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+
+  .cita-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .cita-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+  .cita-fecha {
+    background: #eff6ff;
+    color: #3b82f6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: center;
+    min-width: 60px;
+  }
+  .cita-fecha .dia { font-size: 22px; font-weight: 700; line-height: 1; }
+  .cita-fecha .mes { font-size: 11px; font-weight: 500; text-transform: uppercase; }
+
+  .cita-info { flex: 1; }
+  .cita-info .nombre { font-size: 15px; font-weight: 600; }
+  .cita-info .detalles { font-size: 13px; color: #64748b; margin-top: 3px; }
+
+  .cita-hora {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: right;
+  }
+  .cita-hora span { display: block; font-size: 11px; color: #64748b; font-weight: 400; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .badge-confirmed { background: #dbeafe; color: #2563eb; }
+  .badge-cancelled { background: #fee2e2; color: #dc2626; }
+  .badge-completed { background: #dcfce7; color: #16a34a; }
+
+  .empty-state { text-align: center; padding: 48px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { color: #64748b; font-size: 14px; }
+
+  /* Calendar mini */
+  .calendar-wrap { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 24px; }
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .cal-header span { font-size: 15px; font-weight: 600; }
+  .cal-header button { background: #f1f5f9; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+  .cal-day-name { font-size: 11px; color: #94a3b8; font-weight: 600; padding: 4px; }
+  .cal-day {
+    padding: 8px 4px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cal-day:hover { background: #eff6ff; color: #3b82f6; }
+  .cal-day.today { background: #3b82f6; color: white; font-weight: 700; }
+  .cal-day.has-cita { position: relative; font-weight: 600; color: #3b82f6; }
+  .cal-day.has-cita::after { content: '•'; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 16px; color: #3b82f6; line-height: 0.5; }
+  .cal-day.empty { cursor: default; }
+  .cal-day.selected { background: #dbeafe; color: #2563eb; font-weight: 700; }
+
+  button { cursor: pointer; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.2s; }
+  button:hover { opacity: 0.85; }
+  .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; }
+  .btn-logout { background: #475569; color: white; padding: 8px 14px; font-size: 12px; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; }
+
+  .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 440px; margin: 24px; }
+  .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .btn-secondary { background: #e2e8f0; color: #1e293b; padding: 9px 18px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-info">
+    <h2 id="empresa-nombre">Mi Negocio</h2>
+    <span id="empresa-tipo"></span>
+  </div>
+  <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div class="login-wrap" id="login-section">
+    <div class="login-box">
+      <div class="logo">📅</div>
+      <h2>Mi Agenda</h2>
+      <p>Inicia sesión para ver y gestionar tus citas</p>
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="login-user" placeholder="tu_usuario">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
+      </div>
+      <p class="error-msg" id="login-error">Usuario o contraseña incorrectos</p>
+      <button class="btn-primary" style="width:100%;margin-top:8px" onclick="login()">Entrar</button>
+    </div>
+  </div>
+
+  <!-- PANEL CLIENTE -->
+  <div id="panel-section" style="display:none">
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="number" id="stat-hoy">0</div>
+        <div class="label">Citas hoy</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-semana">0</div>
+        <div class="label">Esta semana</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-mes">0</div>
+        <div class="label">Este mes</div>
+      </div>
+    </div>
+
+    <!-- Calendario mini -->
+    <div class="calendar-wrap">
+      <div class="cal-header">
+        <button onclick="cambiarMes(-1)">←</button>
+        <span id="cal-titulo"></span>
+        <button onclick="cambiarMes(1)">→</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+    <!-- Lista de citas -->
+    <div class="section-title">
+      <span id="citas-titulo">Próximas citas</span>
+      <button class="btn-primary" onclick="abrirModal()" style="font-size:13px;padding:8px 16px">+ Nueva cita</button>
+    </div>
+    <div class="citas-lista" id="citas-lista">
+      <div class="empty-state">
+        <div class="icon">📭</div>
+        <p>No hay citas próximas</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal nueva cita -->
+<div class="modal-overlay" id="modal-cita">
+  <div class="modal">
+    <h3>Nueva cita</h3>
+    <div class="form-group"><label>Nombre del cliente</label><input type="text" id="cita-nombre" placeholder="Juan García"></div>
+    <div class="form-group"><label>Teléfono</label><input type="text" id="cita-telefono" placeholder="+521234567890"></div>
+    <div class="form-group"><label>Fecha</label><input type="date" id="cita-fecha"></div>
+    <div class="form-group"><label>Hora</label>
+      <select id="cita-hora">
+        <option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option>
+        <option>11:00</option><option>11:30</option><option>12:00</option><option>12:30</option>
+        <option>15:00</option><option>15:30</option><option>16:00</option><option>16:30</option>
+        <option>17:00</option><option>17:30</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Servicio</label><input type="text" id="cita-servicio" placeholder="Consulta general"></div>
+    <div class="form-group"><label>Notas</label><textarea id="cita-notas" placeholder="Opcional..." style="height:70px;resize:vertical"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarCita()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = window.location.origin
+  let token = localStorage.getItem('client_token')
+  let companyData = JSON.parse(localStorage.getItem('client_company') || 'null')
+  let todasCitas = []
+  let currentMonth = new Date()
+  let selectedDate = null
+
+  if (token && companyData) mostrarPanel()
+
+  async function login() {
+    const username = document.getElementById('login-user').value
+    const password = document.getElementById('login-pass').value
+
+    const res = await fetch(`${API}/auth/client-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      token = data.token
+      companyData = data.company
+      localStorage.setItem('client_token', token)
+      localStorage.setItem('client_company', JSON.stringify(companyData))
+      mostrarPanel()
+    } else {
+      document.getElementById('login-error').style.display = 'block'
+    }
+  }
+
+  function mostrarPanel() {
+    document.getElementById('login-section').style.display = 'none'
+    document.getElementById('panel-section').style.display = 'block'
+    document.getElementById('btn-logout').style.display = 'block'
+    document.getElementById('empresa-nombre').textContent = companyData.name
+    document.getElementById('empresa-tipo').textContent = companyData.type
+    document.getElementById('cita-fecha').value = new Date().toISOString().split('T')[0]
+    cargarCitas()
+  }
+
+  function logout() {
+    localStorage.removeItem('client_token')
+    localStorage.removeItem('client_company')
+    token = null
+    companyData = null
+    document.getElementById('login-section').style.display = 'flex'
+    document.getElementById('panel-section').style.display = 'none'
+    document.getElementById('btn-logout').style.display = 'none'
+  }
+
+  async function cargarCitas() {
+    const res = await fetch(`${API}/appointments/${companyData.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    todasCitas = await res.json()
+
+    const hoy = new Date().toISOString().split('T')[0]
+    const finSemana = new Date(); finSemana.setDate(finSemana.getDate() + 7)
+    const finMes = new Date(); finMes.setDate(finMes.getDate() + 30)
+
+    const citasHoy = todasCitas.filter(c => new Date(c.date).toISOString().split('T')[0] === hoy && c.status === 'confirmed')
+    const citasSemana = todasCitas.filter(c => new Date(c.date) <= finSemana && new Date(c.date) >= new Date() && c.status === 'confirmed')
+    const citasMes = todasCitas.filter(c => new Date(c.date) <= finMes && new Date(c.date) >= new Date() && c.status === 'confirmed')
+
+    document.getElementById('stat-hoy').textContent = citasHoy.length
+    document.getElementById('stat-semana').textContent = citasSemana.length
+    document.getElementById('stat-mes').textContent = citasMes.length
+
+    renderCalendario()
+    renderCitas(selectedDate)
+  }
+
+  function renderCalendario() {
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+    const dias = ['Lu','Ma','Mi','Ju','Vi','Sá','Do']
+    
+    document.getElementById('cal-titulo').textContent = `${meses[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`
+    
+    const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
+    const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
+    const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1
+    const today = new Date().toISOString().split('T')[0]
+
+    const fechasConCitas = new Set(todasCitas
+      .filter(c => c.status === 'confirmed')
+      .map(c => new Date(c.date).toISOString().split('T')[0]))
+
+    let html = dias.map(d => `<div class="cal-day-name">${d}</div>`).join('')
+    
+    for (let i = 0; i < startDay; i++) html += `<div class="cal-day empty"></div>`
+    
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+      const isToday = dateStr === today
+      const hasCita = fechasConCitas.has(dateStr)
+      const isSelected = selectedDate === dateStr
+      html += `<div class="cal-day ${isToday?'today':''} ${hasCita?'has-cita':''} ${isSelected?'selected':''}" onclick="selectDate('${dateStr}')">${d}</div>`
+    }
+
+    document.getElementById('cal-grid').innerHTML = html
+  }
+
+  function selectDate(date) {
+    selectedDate = selectedDate === date ? null : date
+    renderCalendario()
+    renderCitas(selectedDate)
+  }
+
+  function cambiarMes(dir) {
+    currentMonth.setMonth(currentMonth.getMonth() + dir)
+    renderCalendario()
+  }
+
+  function renderCitas(fecha) {
+    const lista = document.getElementById('citas-lista')
+    const titulo = document.getElementById('citas-titulo')
+
+    let citas = todasCitas.filter(c => new Date(c.date) >= new Date(new Date().setHours(0,0,0,0)))
+    
+    if (fecha) {
+      citas = todasCitas.filter(c => new Date(c.date).toISOString().split('T')[0] === fecha)
+      titulo.textContent = `Citas del ${fecha}`
+    } else {
+      titulo.textContent = 'Próximas citas'
+    }
+
+    citas.sort((a,b) => new Date(a.date) - new Date(b.date))
+
+    if (citas.length === 0) {
+      lista.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>${fecha ? 'No hay citas este día' : 'No hay citas próximas'}</p></div>`
+      return
+    }
+
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
+    lista.innerHTML = citas.map(c => {
+      const fecha = new Date(c.date)
+      return `
+        <div class="cita-card">
+          <div class="cita-fecha">
+            <div class="dia">${fecha.getUTCDate()}</div>
+            <div class="mes">${meses[fecha.getUTCMonth()]}</div>
+          </div>
+          <div class="cita-info">
+            <div class="nombre">${c.clientName}</div>
+            <div class="detalles">${c.service} · ${c.clientPhone}</div>
+            <span class="badge badge-${c.status}">${c.status === 'confirmed' ? 'Confirmada' : c.status === 'cancelled' ? 'Cancelada' : 'Completada'}</span>
+          </div>
+          <div class="cita-hora">
+            ${c.time}
+            <span>hrs</span>
+          </div>
+        </div>
+      `
+    }).join('')
+  }
+
+  function abrirModal() { document.getElementById('modal-cita').classList.add('active') }
+  function cerrarModal() { document.getElementById('modal-cita').classList.remove('active') }
+
+  async function guardarCita() {
+    const clientName = document.getElementById('cita-nombre').value
+    const clientPhone = document.getElementById('cita-telefono').value
+    const date = document.getElementById('cita-fecha').value
+    const time = document.getElementById('cita-hora').value
+    const service = document.getElementById('cita-servicio').value
+    const notes = document.getElementById('cita-notas').value
+
+    if (!clientName || !date) { alert('Nombre y fecha son obligatorios'); return }
+
+    await fetch(`${API}/appointments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ companyId: companyData.id, clientPhone, clientName, date, time, service, notes })
+    })
+
+    cerrarModal()
+    cargarCitas()
+  }
+</script>
+</body>
+</html>

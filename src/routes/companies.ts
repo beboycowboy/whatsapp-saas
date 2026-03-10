@@ -3,7 +3,6 @@ import prisma from '../services/database'
 
 const router = Router()
 
-// Obtener todas las empresas
 router.get('/', async (req: Request, res: Response) => {
   try {
     const companies = await prisma.company.findMany({
@@ -15,12 +14,15 @@ router.get('/', async (req: Request, res: Response) => {
   }
 })
 
-// Agregar empresa nueva
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, type, phone, prompt } = req.body
+    const { name, type, phone, prompt, username, password } = req.body
     const company = await prisma.company.create({
-      data: { name, type, phone, prompt }
+      data: { 
+        name, type, phone, prompt,
+        username: username || name.toLowerCase().replace(/\s/g, ''),
+        password: password || 'cambiar123'
+      }
     })
     res.json(company)
   } catch (error) {
@@ -28,14 +30,13 @@ router.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// Actualizar empresa
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { name, type, phone, prompt, active } = req.body
+    const { name, type, phone, prompt, active, username, password } = req.body
     const company = await prisma.company.update({
       where: { id },
-      data: { name, type, phone, prompt, active }
+      data: { name, type, phone, prompt, active, username, password }
     })
     res.json(company)
   } catch (error) {
@@ -43,7 +44,6 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 })
 
-// Eliminar empresa
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params

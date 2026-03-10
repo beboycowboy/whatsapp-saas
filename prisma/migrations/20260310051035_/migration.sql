@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Company" ALTER COLUMN "password" DROP DEFAULT,
+ALTER COLUMN "username" DROP DEFAULT;

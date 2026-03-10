@@ -14,10 +14,12 @@ model Company {
   phone     String   @unique
   prompt    String   @db.Text
   active    Boolean  @default(true)
+  username  String   @unique
+  password  String
   createdAt DateTime @default(now())
   
-  conversations Conversation[]
   appointments  Appointment[]
+  conversations Conversation[]
 }
 
 model Conversation {
@@ -39,7 +41,7 @@ model Appointment {
   date        DateTime
   time        String
   service     String
-  status      String   @default("confirmed") // confirmed, cancelled, completed
+  status      String   @default("confirmed")
   notes       String?  @db.Text
   createdAt   DateTime @default(now())
   
