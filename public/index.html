@@ -12,138 +12,153 @@
   header {
     background: #1e293b;
     color: white;
-    padding: 20px 32px;
+    padding: 16px 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
-  header h1 { font-size: 20px; font-weight: 700; }
-  header span { font-size: 13px; color: #94a3b8; }
+  header h1 { font-size: 18px; font-weight: 700; }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.1);
+    padding: 4px;
+    border-radius: 8px;
+  }
+  .nav-tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+  }
+  .nav-tab.active { background: white; color: #1e293b; }
+  .nav-tab:hover:not(.active) { color: white; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
 
   /* Login */
-  .login-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 80vh;
-  }
+  .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 80vh; }
   .login-box {
-    background: white;
-    border-radius: 16px;
-    padding: 40px;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid #e2e8f0;
+    background: white; border-radius: 16px; padding: 40px;
+    width: 100%; max-width: 400px; border: 1px solid #e2e8f0;
     box-shadow: 0 4px 24px rgba(0,0,0,0.06);
   }
   .login-box h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
   .login-box p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
 
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  .stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid #e2e8f0;
-  }
-  .stat-card .number { font-size: 36px; font-weight: 700; color: #1e293b; }
-  .stat-card .label { font-size: 13px; color: #64748b; margin-top: 4px; }
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
+  .stat-card .number { font-size: 32px; font-weight: 700; }
+  .stat-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  .section-header h2 { font-size: 18px; font-weight: 600; }
-
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    transition: opacity 0.2s;
-  }
+  /* Buttons */
+  button { cursor: pointer; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.2s; }
   button:hover { opacity: 0.85; }
-
   .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; }
   .btn-danger { background: #ef4444; color: white; padding: 6px 12px; font-size: 12px; }
   .btn-success { background: #22c55e; color: white; padding: 6px 12px; font-size: 12px; }
   .btn-secondary { background: #e2e8f0; color: #1e293b; padding: 6px 12px; font-size: 12px; }
   .btn-logout { background: #475569; color: white; padding: 8px 16px; font-size: 13px; }
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
 
-  table {
-    width: 100%;
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    border-collapse: collapse;
-    overflow: hidden;
-  }
-  th {
-    background: #f8fafc;
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 600;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid #e2e8f0;
-  }
+  /* Table */
+  table { width: 100%; background: white; border-radius: 12px; border: 1px solid #e2e8f0; border-collapse: collapse; overflow: hidden; }
+  th { background: #f8fafc; padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
   td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
   tr:last-child td { border-bottom: none; }
 
   .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .badge-active { background: #dcfce7; color: #16a34a; }
   .badge-inactive { background: #fee2e2; color: #dc2626; }
+  .badge-confirmed { background: #dbeafe; color: #2563eb; }
+  .badge-cancelled { background: #fee2e2; color: #dc2626; }
+  .badge-completed { background: #dcfce7; color: #16a34a; }
   .type-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; background: #eff6ff; color: #3b82f6; }
 
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .section-header h2 { font-size: 18px; font-weight: 600; }
+
+  /* Calendar */
+  .calendar-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .calendar-nav { display: flex; align-items: center; gap: 12px; }
+  .calendar-nav button { background: white; border: 1px solid #e2e8f0; color: #1e293b; padding: 8px 14px; font-size: 14px; border-radius: 8px; }
+  .calendar-nav span { font-size: 18px; font-weight: 700; min-width: 200px; text-align: center; }
+
+  .company-select { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; background: white; outline: none; }
+
+  .week-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; }
+  .week-header { background: #f8fafc; padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 600; color: #64748b; }
+  .week-header.today { background: #eff6ff; color: #3b82f6; }
+  .time-slot { background: white; padding: 4px 6px; min-height: 48px; position: relative; font-size: 11px; color: #94a3b8; display: flex; align-items: flex-start; }
+  .time-label { background: #f8fafc; padding: 4px 8px; min-height: 48px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #94a3b8; font-weight: 500; }
+
+  .appointment-block {
+    background: #3b82f6;
+    color: white;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    line-height: 1.3;
+    transition: opacity 0.2s;
+  }
+  .appointment-block:hover { opacity: 0.85; }
+  .appointment-block.cancelled { background: #ef4444; }
+  .appointment-block.completed { background: #22c55e; }
+
+  /* Modal */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.active { display: flex; }
-  .modal { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; margin: 24px; }
+  .modal { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; margin: 24px; max-height: 90vh; overflow-y: auto; }
   .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
 
   .form-group { margin-bottom: 16px; }
   .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s;
   }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus { border-color: #3b82f6; }
-  .form-group textarea { height: 100px; resize: vertical; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #3b82f6; }
+  .form-group textarea { height: 80px; resize: vertical; }
 
   .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
   .empty { text-align: center; padding: 48px; color: #94a3b8; }
   .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  @media (max-width: 768px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .week-grid { grid-template-columns: 60px repeat(7, 1fr); }
+    header { padding: 12px 16px; }
+    .container { padding: 16px; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>⚡ WhatsApp SaaS — Admin</h1>
-  <div style="display:flex;align-items:center;gap:16px">
-    <span id="fecha"></span>
-    <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Cerrar sesión</button>
+  <h1>⚡ WhatsApp SaaS</h1>
+  <div class="nav-tabs" id="nav-tabs" style="display:none">
+    <button class="nav-tab active" onclick="showPage('empresas')">Empresas</button>
+    <button class="nav-tab" onclick="showPage('agenda')">Agenda</button>
+    <button class="nav-tab" onclick="showPage('conversaciones')">Conversaciones</button>
   </div>
+  <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
 </header>
 
 <div class="container">
@@ -166,53 +181,90 @@
     </div>
   </div>
 
-  <!-- PANEL -->
-  <div id="panel-section" style="display:none">
+  <!-- EMPRESAS -->
+  <div id="page-empresas" class="page active" style="display:none">
     <div class="stats">
       <div class="stat-card">
         <div class="number" id="total-empresas">0</div>
         <div class="label">Empresas activas</div>
       </div>
       <div class="stat-card">
+        <div class="number" id="total-citas">0</div>
+        <div class="label">Citas hoy</div>
+      </div>
+      <div class="stat-card">
         <div class="number" id="total-conversaciones">0</div>
-        <div class="label">Conversaciones hoy</div>
+        <div class="label">Mensajes hoy</div>
       </div>
       <div class="stat-card">
         <div class="number" id="total-ingresos">$0</div>
-        <div class="label">Ingresos mensuales est.</div>
+        <div class="label">Ingresos est. mensuales</div>
       </div>
     </div>
 
     <div class="section-header">
       <h2>Empresas</h2>
-      <button class="btn-primary" onclick="abrirModal()">+ Nueva empresa</button>
+      <button class="btn-primary" onclick="abrirModalEmpresa()">+ Nueva empresa</button>
     </div>
 
     <table>
       <thead>
         <tr>
-          <th>Empresa</th>
-          <th>Tipo</th>
-          <th>Número</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+          <th>Empresa</th><th>Tipo</th><th>Número</th><th>Estado</th><th>Acciones</th>
         </tr>
       </thead>
-      <tbody id="tabla-empresas"></tbody>
+      <tbody id="tabla-empresas">
+        <tr><td colspan="5" class="empty">No hay empresas aún</td></tr>
+      </tbody>
     </table>
   </div>
+
+  <!-- AGENDA -->
+  <div id="page-agenda" class="page" style="display:none">
+    <div class="calendar-header">
+      <div class="calendar-nav">
+        <button onclick="cambiarSemana(-1)">← Ant</button>
+        <span id="semana-label">Cargando...</span>
+        <button onclick="cambiarSemana(1)">Sig →</button>
+      </div>
+      <select class="company-select" id="empresa-select" onchange="cargarAgenda()">
+        <option value="">Selecciona empresa</option>
+      </select>
+      <button class="btn-primary" onclick="abrirModalCita()">+ Nueva cita</button>
+    </div>
+
+    <div class="week-grid" id="week-grid">
+      <div class="week-header"></div>
+    </div>
+  </div>
+
+  <!-- CONVERSACIONES -->
+  <div id="page-conversaciones" class="page" style="display:none">
+    <div class="section-header">
+      <h2>Conversaciones recientes</h2>
+      <select class="company-select" id="conv-empresa-select" onchange="cargarConversaciones()">
+        <option value="">Todas las empresas</option>
+      </select>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Empresa</th><th>Cliente</th><th>Mensaje</th><th>Respuesta</th><th>Fecha</th></tr>
+      </thead>
+      <tbody id="tabla-conversaciones">
+        <tr><td colspan="5" class="empty">No hay conversaciones</td></tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
-<!-- Modal nueva empresa -->
-<div class="modal-overlay" id="modal">
+<!-- Modal empresa -->
+<div class="modal-overlay" id="modal-empresa">
   <div class="modal">
     <h3>Nueva empresa</h3>
+    <div class="form-group"><label>Nombre</label><input type="text" id="input-name" placeholder="Dentista García"></div>
     <div class="form-group">
-      <label>Nombre del negocio</label>
-      <input type="text" id="input-name" placeholder="Ej: Dentista García">
-    </div>
-    <div class="form-group">
-      <label>Tipo de negocio</label>
+      <label>Tipo</label>
       <select id="input-type">
         <option value="dentista">🦷 Dentista</option>
         <option value="psicologo">🧠 Psicólogo</option>
@@ -221,17 +273,44 @@
         <option value="nutriologo">🥗 Nutriólogo</option>
       </select>
     </div>
-    <div class="form-group">
-      <label>Número de WhatsApp (Twilio)</label>
-      <input type="text" id="input-phone" placeholder="+14155238886">
-    </div>
-    <div class="form-group">
-      <label>Prompt / Instrucciones del bot</label>
-      <textarea id="input-prompt" placeholder="Eres el asistente virtual de Dentista García..."></textarea>
-    </div>
+    <div class="form-group"><label>Número WhatsApp</label><input type="text" id="input-phone" placeholder="whatsapp:+14155238886"></div>
+    <div class="form-group"><label>Prompt del bot</label><textarea id="input-prompt" placeholder="Eres el asistente de..."></textarea></div>
     <div class="modal-actions">
-      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-secondary" onclick="cerrarModal('modal-empresa')">Cancelar</button>
       <button class="btn-primary" onclick="guardarEmpresa()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal cita -->
+<div class="modal-overlay" id="modal-cita">
+  <div class="modal">
+    <h3 id="modal-cita-titulo">Nueva cita</h3>
+    <div class="form-group"><label>Empresa</label>
+      <select id="cita-empresa">
+        <option value="">Selecciona empresa</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Nombre del cliente</label><input type="text" id="cita-nombre" placeholder="Juan García"></div>
+    <div class="form-group"><label>Teléfono del cliente</label><input type="text" id="cita-telefono" placeholder="+521234567890"></div>
+    <div class="form-group"><label>Fecha</label><input type="date" id="cita-fecha"></div>
+    <div class="form-group"><label>Hora</label>
+      <select id="cita-hora">
+        <option value="09:00">09:00</option><option value="09:30">09:30</option>
+        <option value="10:00">10:00</option><option value="10:30">10:30</option>
+        <option value="11:00">11:00</option><option value="11:30">11:30</option>
+        <option value="12:00">12:00</option><option value="12:30">12:30</option>
+        <option value="15:00">15:00</option><option value="15:30">15:30</option>
+        <option value="16:00">16:00</option><option value="16:30">16:30</option>
+        <option value="17:00">17:00</option><option value="17:30">17:30</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Servicio</label><input type="text" id="cita-servicio" placeholder="Consulta general"></div>
+    <div class="form-group"><label>Notas</label><textarea id="cita-notas" placeholder="Opcional..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="cerrarModal('modal-cita')">Cancelar</button>
+      <button class="btn-danger btn-sm" id="btn-cancelar-cita" style="display:none" onclick="cancelarCitaActual()">Cancelar cita</button>
+      <button class="btn-primary" onclick="guardarCita()">Guardar</button>
     </div>
   </div>
 </div>
@@ -239,22 +318,29 @@
 <script>
   const API = window.location.origin
   let token = localStorage.getItem('admin_token')
+  let empresas = []
+  let currentWeekStart = getMonday(new Date())
+  let editingCitaId = null
 
-  document.getElementById('fecha').textContent = new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-
-  // Verificar si ya hay sesión
   if (token) mostrarPanel()
+
+  function getMonday(d) {
+    d = new Date(d)
+    const day = d.getDay()
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+    d.setDate(diff)
+    d.setHours(0,0,0,0)
+    return d
+  }
 
   async function login() {
     const username = document.getElementById('login-user').value
     const password = document.getElementById('login-pass').value
-
     const res = await fetch(`${API}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     })
-
     if (res.ok) {
       const data = await res.json()
       token = data.token
@@ -267,8 +353,9 @@
 
   function mostrarPanel() {
     document.getElementById('login-section').style.display = 'none'
-    document.getElementById('panel-section').style.display = 'block'
+    document.getElementById('nav-tabs').style.display = 'flex'
     document.getElementById('btn-logout').style.display = 'block'
+    showPage('empresas')
     cargarEmpresas()
   }
 
@@ -276,49 +363,186 @@
     localStorage.removeItem('admin_token')
     token = null
     document.getElementById('login-section').style.display = 'flex'
-    document.getElementById('panel-section').style.display = 'none'
+    document.getElementById('nav-tabs').style.display = 'none'
     document.getElementById('btn-logout').style.display = 'none'
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none')
+  }
+
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; p.classList.remove('active') })
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'))
+    document.getElementById(`page-${page}`).style.display = 'block'
+    document.getElementById(`page-${page}`).classList.add('active')
+    event?.target?.classList.add('active')
+
+    if (page === 'agenda') cargarAgenda()
+    if (page === 'conversaciones') cargarConversaciones()
   }
 
   async function cargarEmpresas() {
-    const res = await fetch(`${API}/companies`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    const res = await fetch(`${API}/companies`, { headers: { 'Authorization': `Bearer ${token}` } })
+    if (res.status === 401) { logout(); return }
+    empresas = await res.json()
 
-    if (res.status === 401) { logout(); return; }
-
-    const empresas = await res.json()
     const activas = empresas.filter(e => e.active).length
     document.getElementById('total-empresas').textContent = activas
     document.getElementById('total-ingresos').textContent = `$${(activas * 800).toLocaleString()}`
 
+    // Actualizar selects
+    const options = empresas.map(e => `<option value="${e.id}">${e.name}</option>`).join('')
+    document.getElementById('empresa-select').innerHTML = `<option value="">Selecciona empresa</option>${options}`
+    document.getElementById('conv-empresa-select').innerHTML = `<option value="">Todas las empresas</option>${options}`
+    document.getElementById('cita-empresa').innerHTML = `<option value="">Selecciona empresa</option>${options}`
+
     const tbody = document.getElementById('tabla-empresas')
     if (empresas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty">No hay empresas aún. ¡Agrega tu primer cliente!</td></tr>`
+      tbody.innerHTML = `<tr><td colspan="5" class="empty">No hay empresas aún</td></tr>`
       return
     }
-
     tbody.innerHTML = empresas.map(e => `
       <tr>
         <td><strong>${e.name}</strong></td>
         <td><span class="type-badge">${e.type}</span></td>
-        <td>${e.phone}</td>
+        <td style="font-size:12px;color:#64748b">${e.phone}</td>
         <td><span class="badge ${e.active ? 'badge-active' : 'badge-inactive'}">${e.active ? 'Activo' : 'Inactivo'}</span></td>
         <td style="display:flex;gap:8px">
-          <button class="btn-${e.active ? 'danger' : 'success'}" onclick="toggleEmpresa('${e.id}', ${e.active})">${e.active ? 'Desactivar' : 'Activar'}</button>
-          <button class="btn-danger" onclick="eliminarEmpresa('${e.id}')">Eliminar</button>
+          <button class="btn-${e.active ? 'danger' : 'success'} btn-sm" onclick="toggleEmpresa('${e.id}', ${e.active})">${e.active ? 'Desactivar' : 'Activar'}</button>
+          <button class="btn-danger btn-sm" onclick="eliminarEmpresa('${e.id}')">Eliminar</button>
         </td>
       </tr>
     `).join('')
   }
 
-  function abrirModal() { document.getElementById('modal').classList.add('active') }
+  // ===== AGENDA =====
+  async function cargarAgenda() {
+    const companyId = document.getElementById('empresa-select').value
+    const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+    const horas = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
-  function cerrarModal() {
-    document.getElementById('modal').classList.remove('active')
-    document.getElementById('input-name').value = ''
-    document.getElementById('input-phone').value = ''
-    document.getElementById('input-prompt').value = ''
+    const weekDays = []
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(currentWeekStart)
+      d.setDate(d.getDate() + i)
+      weekDays.push(d)
+    }
+
+    const start = weekDays[0].toISOString().split('T')[0]
+    const end = weekDays[6].toISOString().split('T')[0]
+
+    document.getElementById('semana-label').textContent =
+      `${weekDays[0].getDate()} ${weekDays[0].toLocaleString('es-MX', {month:'short'})} — ${weekDays[6].getDate()} ${weekDays[6].toLocaleString('es-MX', {month:'short', year:'numeric'})}`
+
+    let citas = []
+    if (companyId) {
+      try {
+        const res = await fetch(`${API}/appointments/${companyId}`, { headers: { 'Authorization': `Bearer ${token}` } })
+        citas = await res.json()
+      } catch(e) {}
+    }
+
+    const today = new Date().toISOString().split('T')[0]
+    const grid = document.getElementById('week-grid')
+
+    let html = `<div class="week-header"></div>`
+    weekDays.forEach((d, i) => {
+      const dateStr = d.toISOString().split('T')[0]
+      const isToday = dateStr === today
+      html += `<div class="week-header ${isToday ? 'today' : ''}">${dias[i]}<br><strong>${d.getDate()}</strong></div>`
+    })
+
+    horas.forEach(hora => {
+      html += `<div class="time-label">${hora}</div>`
+      weekDays.forEach(d => {
+        const dateStr = d.toISOString().split('T')[0]
+        const citasSlot = citas.filter(c => {
+          const citaDate = new Date(c.date).toISOString().split('T')[0]
+          return citaDate === dateStr && c.time === hora
+        })
+
+        html += `<div class="time-slot" onclick="abrirModalCitaFecha('${dateStr}', '${hora}')">`
+        citasSlot.forEach(c => {
+          html += `<button class="appointment-block ${c.status}" onclick="event.stopPropagation();editarCita('${c.id}')">
+            ${c.clientName}<br>${c.service}
+          </button>`
+        })
+        html += `</div>`
+      })
+    })
+
+    grid.innerHTML = html
+  }
+
+  function cambiarSemana(dir) {
+    currentWeekStart.setDate(currentWeekStart.getDate() + (dir * 7))
+    cargarAgenda()
+  }
+
+  // ===== CONVERSACIONES =====
+  async function cargarConversaciones() {
+    const companyId = document.getElementById('conv-empresa-select').value
+    let url = companyId ? `${API}/companies/${companyId}/conversations` : `${API}/companies/conversations/all`
+    
+    // Por ahora cargamos de todas las empresas
+    const tbody = document.getElementById('tabla-conversaciones')
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">Cargando...</td></tr>`
+
+    try {
+      const res = await fetch(`${API}/companies`, { headers: { 'Authorization': `Bearer ${token}` } })
+      const comps = await res.json()
+      
+      let todasConvs = []
+      for (const comp of comps) {
+        const r = await fetch(`${API}/appointments/${comp.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+      }
+
+      tbody.innerHTML = `<tr><td colspan="5" class="empty">Próximamente — conversaciones en tiempo real</td></tr>`
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty">Error cargando conversaciones</td></tr>`
+    }
+  }
+
+  // ===== MODALES =====
+  function abrirModalEmpresa() { document.getElementById('modal-empresa').classList.add('active') }
+
+  function abrirModalCita() {
+    editingCitaId = null
+    document.getElementById('modal-cita-titulo').textContent = 'Nueva cita'
+    document.getElementById('btn-cancelar-cita').style.display = 'none'
+    document.getElementById('cita-fecha').value = new Date().toISOString().split('T')[0]
+    document.getElementById('modal-cita').classList.add('active')
+  }
+
+  function abrirModalCitaFecha(fecha, hora) {
+    abrirModalCita()
+    document.getElementById('cita-fecha').value = fecha
+    document.getElementById('cita-hora').value = hora
+  }
+
+  async function editarCita(id) {
+    // Buscar cita en todas las empresas
+    for (const emp of empresas) {
+      const res = await fetch(`${API}/appointments/${emp.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+      const citas = await res.json()
+      const cita = citas.find(c => c.id === id)
+      if (cita) {
+        editingCitaId = id
+        document.getElementById('modal-cita-titulo').textContent = 'Editar cita'
+        document.getElementById('btn-cancelar-cita').style.display = 'block'
+        document.getElementById('cita-empresa').value = cita.companyId
+        document.getElementById('cita-nombre').value = cita.clientName
+        document.getElementById('cita-telefono').value = cita.clientPhone
+        document.getElementById('cita-fecha').value = new Date(cita.date).toISOString().split('T')[0]
+        document.getElementById('cita-hora').value = cita.time
+        document.getElementById('cita-servicio').value = cita.service
+        document.getElementById('cita-notas').value = cita.notes || ''
+        document.getElementById('modal-cita').classList.add('active')
+        return
+      }
+    }
+  }
+
+  function cerrarModal(id) {
+    document.getElementById(id).classList.remove('active')
   }
 
   async function guardarEmpresa() {
@@ -326,17 +550,53 @@
     const type = document.getElementById('input-type').value
     const phone = document.getElementById('input-phone').value
     const prompt = document.getElementById('input-prompt').value
-
-    if (!name || !phone || !prompt) { alert('Por favor llena todos los campos'); return }
-
+    if (!name || !phone || !prompt) { alert('Llena todos los campos'); return }
     await fetch(`${API}/companies`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name, type, phone, prompt })
     })
-
-    cerrarModal()
+    cerrarModal('modal-empresa')
     cargarEmpresas()
+  }
+
+  async function guardarCita() {
+    const companyId = document.getElementById('cita-empresa').value
+    const clientName = document.getElementById('cita-nombre').value
+    const clientPhone = document.getElementById('cita-telefono').value
+    const date = document.getElementById('cita-fecha').value
+    const time = document.getElementById('cita-hora').value
+    const service = document.getElementById('cita-servicio').value
+    const notes = document.getElementById('cita-notas').value
+
+    if (!companyId || !clientName || !date) { alert('Llena los campos obligatorios'); return }
+
+    if (editingCitaId) {
+      await fetch(`${API}/appointments/${editingCitaId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ clientName, date, time, service, notes })
+      })
+    } else {
+      await fetch(`${API}/appointments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ companyId, clientPhone, clientName, date, time, service, notes })
+      })
+    }
+    cerrarModal('modal-cita')
+    cargarAgenda()
+  }
+
+  async function cancelarCitaActual() {
+    if (!editingCitaId) return
+    if (!confirm('¿Cancelar esta cita?')) return
+    await fetch(`${API}/appointments/${editingCitaId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    cerrarModal('modal-cita')
+    cargarAgenda()
   }
 
   async function toggleEmpresa(id, active) {
@@ -349,11 +609,8 @@
   }
 
   async function eliminarEmpresa(id) {
-    if (!confirm('¿Seguro que quieres eliminar esta empresa?')) return
-    await fetch(`${API}/companies/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    if (!confirm('¿Eliminar empresa?')) return
+    await fetch(`${API}/companies/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
     cargarEmpresas()
   }
 </script>
