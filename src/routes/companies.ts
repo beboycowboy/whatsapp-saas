@@ -47,10 +47,13 @@ router.put('/:id', async (req: Request, res: Response) => {
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
+    await prisma.conversation.deleteMany({ where: { companyId: id } })
+    await prisma.appointment.deleteMany({ where: { companyId: id } })
     await prisma.company.delete({ where: { id } })
     res.json({ message: 'Empresa eliminada' })
-  } catch (error) {
-    res.status(500).json({ error: 'Error eliminando empresa' })
+  } catch (error: any) {
+    console.error('Error eliminando empresa:', error.message)
+    res.status(500).json({ error: error.message })
   }
 })
 
