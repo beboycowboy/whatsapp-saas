@@ -3,7 +3,6 @@ import prisma from '../services/database'
 
 const router = Router()
 
-// Obtener citas por empresa
 router.get('/:companyId', async (req: Request, res: Response) => {
   try {
     const { companyId } = req.params
@@ -17,7 +16,6 @@ router.get('/:companyId', async (req: Request, res: Response) => {
   }
 })
 
-// Crear cita
 router.post('/', async (req: Request, res: Response) => {
   try {
     const { companyId, clientPhone, clientName, date, time, service, notes } = req.body
@@ -30,7 +28,6 @@ router.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// Actualizar cita
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
@@ -45,7 +42,6 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 })
 
-// Cancelar cita
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
@@ -55,20 +51,16 @@ router.delete('/:id', async (req: Request, res: Response) => {
     })
     res.json({ message: 'Cita cancelada' })
   } catch (error) {
+    console.error('Error cancelando cita:', error)
     res.status(500).json({ error: 'Error cancelando cita' })
   }
 })
 
-// Verificar disponibilidad
 router.get('/:companyId/disponibilidad/:date', async (req: Request, res: Response) => {
   try {
     const { companyId, date } = req.params
     const citas = await prisma.appointment.findMany({
-      where: {
-        companyId,
-        date: new Date(date),
-        status: 'confirmed'
-      },
+      where: { companyId, date: new Date(date), status: 'confirmed' },
       select: { time: true }
     })
     const ocupados = citas.map(c => c.time)
