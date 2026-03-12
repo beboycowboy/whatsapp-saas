@@ -4,200 +4,282 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mi Agenda</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; min-height: 100vh; }
 
   header {
-    background: #1e293b;
-    color: white;
-    padding: 16px 24px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 14px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
-  .header-info h2 { font-size: 16px; font-weight: 700; }
-  .header-info span { font-size: 12px; color: #94a3b8; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-avatar {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .header-info h2 { font-size: 15px; font-weight: 700; }
+  .header-info span { font-size: 12px; color: #64748b; }
 
-  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+  button { cursor: pointer; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; transition: all 0.2s; }
+  .btn-logout { background: #f1f5f9; color: #64748b; padding: 8px 14px; font-size: 12px; border-radius: 8px; }
+  .btn-logout:hover { background: #e2e8f0; }
+  .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; border-radius: 10px; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-secondary { background: #f1f5f9; color: #374151; padding: 9px 18px; font-size: 13px; border-radius: 8px; }
 
-  .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
+  /* Login */
+  .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%); }
   .login-box {
-    background: white; border-radius: 16px; padding: 40px;
-    width: 100%; max-width: 380px; border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06); text-align: center;
+    background: white; border-radius: 20px; padding: 44px;
+    width: 100%; max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    text-align: center;
   }
-  .login-box .logo { font-size: 48px; margin-bottom: 16px; }
-  .login-box h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .login-box p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
+  .login-logo { font-size: 52px; margin-bottom: 16px; }
+  .login-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .login-box p { font-size: 14px; color: #64748b; margin-bottom: 32px; }
 
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: white; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; text-align: center; }
-  .stat-card .number { font-size: 28px; font-weight: 700; color: #3b82f6; }
-  .stat-card .label { font-size: 11px; color: #64748b; margin-top: 4px; }
+  .form-group { margin-bottom: 14px; text-align: left; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #374151; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 11px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; outline: none;
+    transition: border-color 0.2s; background: #f8fafc;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; background: white; }
+  .form-group textarea { height: 80px; resize: vertical; }
+  .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; text-align: center; }
 
-  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  /* Main layout */
+  .main { display: grid; grid-template-columns: 320px 1fr; gap: 0; min-height: calc(100vh - 65px); }
 
-  .citas-lista { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  /* Sidebar calendario */
+  .sidebar {
+    background: white;
+    border-right: 1px solid #e2e8f0;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .stats-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; }
+  .stat-mini { background: #f8fafc; border-radius: 10px; padding: 12px; text-align: center; }
+  .stat-mini .num { font-size: 22px; font-weight: 800; color: #3b82f6; }
+  .stat-mini .lbl { font-size: 10px; color: #64748b; margin-top: 2px; font-weight: 500; }
+
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .cal-header span { font-size: 15px; font-weight: 700; }
+  .cal-nav-btn { background: #f1f5f9; border: none; border-radius: 8px; width: 30px; height: 30px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  .cal-nav-btn:hover { background: #e2e8f0; }
+
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-day-name { font-size: 10px; color: #94a3b8; font-weight: 600; text-align: center; padding: 6px 0; }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: 13px; cursor: pointer;
+    transition: all 0.15s; position: relative;
+    font-weight: 500;
+  }
+  .cal-day:hover:not(.empty) { background: #eff6ff; color: #3b82f6; }
+  .cal-day.today { background: #3b82f6; color: white; font-weight: 700; }
+  .cal-day.selected:not(.today) { background: #dbeafe; color: #1d4ed8; font-weight: 700; }
+  .cal-day.has-cita::after {
+    content: '';
+    position: absolute;
+    bottom: 3px; left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px;
+    background: #3b82f6;
+    border-radius: 50%;
+  }
+  .cal-day.today.has-cita::after { background: white; }
+  .cal-day.empty { cursor: default; }
+  .cal-day.other-month { color: #cbd5e1; }
+
+  .sidebar-divider { border: none; border-top: 1px solid #f1f5f9; margin: 20px 0; }
+
+  .upcoming-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  
+  .upcoming-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    margin-bottom: 6px; cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+  .upcoming-item:hover { background: #f8fafc; }
+  .upcoming-item.selected { background: #eff6ff; border-color: #bfdbfe; }
+  .upcoming-dot { width: 8px; height: 8px; border-radius: 50%; background: #3b82f6; flex-shrink: 0; }
+  .upcoming-dot.cancelled { background: #ef4444; }
+  .upcoming-dot.completed { background: #22c55e; }
+  .upcoming-info { flex: 1; min-width: 0; }
+  .upcoming-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .upcoming-date { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+  .upcoming-time { font-size: 13px; font-weight: 700; color: #3b82f6; flex-shrink: 0; }
+
+  /* Contenido principal */
+  .content { padding: 28px; overflow-y: auto; }
+
+  .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .content-header h2 { font-size: 22px; font-weight: 800; }
+  .content-header span { font-size: 14px; color: #64748b; margin-top: 2px; display: block; }
+
+  /* Timeline */
+  .timeline { position: relative; }
+
+  .time-block { display: flex; gap: 16px; margin-bottom: 8px; }
+  .time-label-col { width: 56px; text-align: right; padding-top: 12px; flex-shrink: 0; }
+  .time-label-col span { font-size: 12px; color: #94a3b8; font-weight: 500; }
+
+  .time-content { flex: 1; min-height: 52px; border-left: 2px solid #f1f5f9; padding-left: 16px; padding-bottom: 4px; }
+  .time-content.has-appointment { border-left-color: #3b82f6; }
 
   .cita-card {
     background: white;
-    border-radius: 12px;
-    padding: 16px 20px;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    transition: box-shadow 0.2s;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
   }
-  .cita-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-
-  .cita-fecha {
-    background: #eff6ff;
-    color: #3b82f6;
-    border-radius: 10px;
-    padding: 10px 14px;
-    text-align: center;
-    min-width: 60px;
+  .cita-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: #3b82f6;
+    border-radius: 4px 0 0 4px;
   }
-  .cita-fecha .dia { font-size: 22px; font-weight: 700; line-height: 1; }
-  .cita-fecha .mes { font-size: 11px; font-weight: 500; text-transform: uppercase; }
+  .cita-card.cancelled::before { background: #ef4444; }
+  .cita-card.completed::before { background: #22c55e; }
+  .cita-card:hover { border-color: #bfdbfe; box-shadow: 0 4px 16px rgba(59,130,246,0.1); transform: translateY(-1px); }
 
-  .cita-info { flex: 1; }
-  .cita-info .nombre { font-size: 15px; font-weight: 600; }
-  .cita-info .detalles { font-size: 13px; color: #64748b; margin-top: 3px; }
-
-  .cita-hora {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1e293b;
-    text-align: right;
+  .cita-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .cita-nombre { font-size: 15px; font-weight: 700; }
+  .cita-hora-badge {
+    background: #eff6ff; color: #3b82f6;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
   }
-  .cita-hora span { display: block; font-size: 11px; color: #64748b; font-weight: 400; }
+  .cita-cancelled .cita-hora-badge { background: #fee2e2; color: #ef4444; }
+  .cita-completed .cita-hora-badge { background: #dcfce7; color: #16a34a; }
 
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .cita-details { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .cita-detail { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #64748b; }
+  .cita-detail strong { color: #374151; }
+
+  .cita-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .badge-confirmed { background: #dbeafe; color: #2563eb; }
   .badge-cancelled { background: #fee2e2; color: #dc2626; }
   .badge-completed { background: #dcfce7; color: #16a34a; }
 
-  .empty-state { text-align: center; padding: 48px; background: white; border-radius: 12px; border: 1px solid #e2e8f0; }
-  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-  .empty-state p { color: #64748b; font-size: 14px; }
+  .cita-notes { font-size: 12px; color: #94a3b8; margin-top: 6px; font-style: italic; }
 
-  /* Calendar mini */
-  .calendar-wrap { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; margin-bottom: 24px; }
-  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .cal-header span { font-size: 15px; font-weight: 600; }
-  .cal-header button { background: #f1f5f9; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-  .cal-day-name { font-size: 11px; color: #94a3b8; font-weight: 600; padding: 4px; }
-  .cal-day {
-    padding: 8px 4px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
+  .empty-day {
+    text-align: center; padding: 64px 32px;
+    background: white; border-radius: 16px;
+    border: 2px dashed #e2e8f0;
   }
-  .cal-day:hover { background: #eff6ff; color: #3b82f6; }
-  .cal-day.today { background: #3b82f6; color: white; font-weight: 700; }
-  .cal-day.has-cita { position: relative; font-weight: 600; color: #3b82f6; }
-  .cal-day.has-cita::after { content: '•'; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 16px; color: #3b82f6; line-height: 0.5; }
-  .cal-day.empty { cursor: default; }
-  .cal-day.selected { background: #dbeafe; color: #2563eb; font-weight: 700; }
+  .empty-day .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-day h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .empty-day p { font-size: 14px; color: #94a3b8; }
 
-  button { cursor: pointer; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.2s; }
-  button:hover { opacity: 0.85; }
-  .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; }
-  .btn-logout { background: #475569; color: white; padding: 8px 14px; font-size: 12px; }
-
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: #3b82f6; }
-
-  .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; }
-
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .modal-overlay.active { display: flex; }
-  .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 440px; margin: 24px; }
-  .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-  .btn-secondary { background: #e2e8f0; color: #1e293b; padding: 9px 18px; font-size: 13px; }
+  .modal { background: white; border-radius: 20px; padding: 32px; width: 100%; max-width: 460px; margin: 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.12); }
+  .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 24px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid #e2e8f0; }
+    .content { padding: 16px; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-info">
-    <h2 id="empresa-nombre">Mi Negocio</h2>
-    <span id="empresa-tipo"></span>
+<header id="app-header" style="display:none">
+  <div class="header-left">
+    <div class="header-avatar" id="header-emoji">📅</div>
+    <div class="header-info">
+      <h2 id="empresa-nombre">Mi Negocio</h2>
+      <span id="empresa-tipo"></span>
+    </div>
   </div>
-  <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="btn-primary" onclick="abrirModal()" style="font-size:13px;padding:8px 16px">+ Nueva cita</button>
+    <button class="btn-logout" onclick="logout()">Salir</button>
+  </div>
 </header>
 
-<div class="container">
-
-  <!-- LOGIN -->
-  <div class="login-wrap" id="login-section">
-    <div class="login-box">
-      <div class="logo">📅</div>
-      <h2>Mi Agenda</h2>
-      <p>Inicia sesión para ver y gestionar tus citas</p>
-      <div class="form-group">
-        <label>Usuario</label>
-        <input type="text" id="login-user" placeholder="tu_usuario">
-      </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
-      </div>
-      <p class="error-msg" id="login-error">Usuario o contraseña incorrectos</p>
-      <button class="btn-primary" style="width:100%;margin-top:8px" onclick="login()">Entrar</button>
+<!-- LOGIN -->
+<div class="login-wrap" id="login-section">
+  <div class="login-box">
+    <div class="login-logo">📅</div>
+    <h2>Mi Agenda</h2>
+    <p>Inicia sesión para gestionar tus citas</p>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="tu_usuario">
     </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <p class="error-msg" id="login-error">Usuario o contraseña incorrectos</p>
+    <button class="btn-primary" style="width:100%;margin-top:8px;border-radius:10px;padding:12px" onclick="login()">Entrar</button>
   </div>
+</div>
 
-  <!-- PANEL CLIENTE -->
-  <div id="panel-section" style="display:none">
+<!-- PANEL -->
+<div id="panel-section" style="display:none">
+  <div class="main">
 
-    <div class="stats">
-      <div class="stat-card">
-        <div class="number" id="stat-hoy">0</div>
-        <div class="label">Citas hoy</div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="stats-mini">
+        <div class="stat-mini"><div class="num" id="stat-hoy">0</div><div class="lbl">Hoy</div></div>
+        <div class="stat-mini"><div class="num" id="stat-semana">0</div><div class="lbl">Semana</div></div>
+        <div class="stat-mini"><div class="num" id="stat-mes">0</div><div class="lbl">Mes</div></div>
       </div>
-      <div class="stat-card">
-        <div class="number" id="stat-semana">0</div>
-        <div class="label">Esta semana</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="stat-mes">0</div>
-        <div class="label">Este mes</div>
-      </div>
-    </div>
 
-    <!-- Calendario mini -->
-    <div class="calendar-wrap">
       <div class="cal-header">
-        <button onclick="cambiarMes(-1)">←</button>
+        <button class="cal-nav-btn" onclick="cambiarMes(-1)">‹</button>
         <span id="cal-titulo"></span>
-        <button onclick="cambiarMes(1)">→</button>
+        <button class="cal-nav-btn" onclick="cambiarMes(1)">›</button>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
+
+      <hr class="sidebar-divider">
+      <div class="upcoming-title">Próximas citas</div>
+      <div id="upcoming-list"></div>
     </div>
 
-    <!-- Lista de citas -->
-    <div class="section-title">
-      <span id="citas-titulo">Próximas citas</span>
-      <button class="btn-primary" onclick="abrirModal()" style="font-size:13px;padding:8px 16px">+ Nueva cita</button>
-    </div>
-    <div class="citas-lista" id="citas-lista">
-      <div class="empty-state">
-        <div class="icon">📭</div>
-        <p>No hay citas próximas</p>
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="content-header">
+        <div>
+          <h2 id="dia-titulo">Hoy</h2>
+          <span id="dia-subtitulo"></span>
+        </div>
       </div>
+      <div class="timeline" id="timeline"></div>
     </div>
 
   </div>
@@ -207,9 +289,9 @@
 <div class="modal-overlay" id="modal-cita">
   <div class="modal">
     <h3>Nueva cita</h3>
-    <div class="form-group"><label>Nombre del cliente</label><input type="text" id="cita-nombre" placeholder="Juan García"></div>
+    <div class="form-group"><label>Nombre del cliente *</label><input type="text" id="cita-nombre" placeholder="Juan García"></div>
     <div class="form-group"><label>Teléfono</label><input type="text" id="cita-telefono" placeholder="+521234567890"></div>
-    <div class="form-group"><label>Fecha</label><input type="date" id="cita-fecha"></div>
+    <div class="form-group"><label>Fecha *</label><input type="date" id="cita-fecha"></div>
     <div class="form-group"><label>Hora</label>
       <select id="cita-hora">
         <option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option>
@@ -219,10 +301,10 @@
       </select>
     </div>
     <div class="form-group"><label>Servicio</label><input type="text" id="cita-servicio" placeholder="Consulta general"></div>
-    <div class="form-group"><label>Notas</label><textarea id="cita-notas" placeholder="Opcional..." style="height:70px;resize:vertical"></textarea></div>
+    <div class="form-group"><label>Notas</label><textarea id="cita-notas" placeholder="Información adicional..."></textarea></div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-      <button class="btn-primary" onclick="guardarCita()">Guardar</button>
+      <button class="btn-primary" onclick="guardarCita()">Guardar cita</button>
     </div>
   </div>
 </div>
@@ -233,20 +315,21 @@
   let companyData = JSON.parse(localStorage.getItem('client_company') || 'null')
   let todasCitas = []
   let currentMonth = new Date()
-  let selectedDate = null
+  let selectedDate = new Date().toISOString().split('T')[0]
+
+  const EMOJIS = { dentista: '🦷', psicologo: '🧠', estetica: '✂️', veterinaria: '🐾', nutriologo: '🥗' }
+  const HORAS = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','15:00','15:30','16:00','16:30','17:00','17:30']
 
   if (token && companyData) mostrarPanel()
 
   async function login() {
     const username = document.getElementById('login-user').value
     const password = document.getElementById('login-pass').value
-
     const res = await fetch(`${API}/auth/client-login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     })
-
     if (res.ok) {
       const data = await res.json()
       token = data.token
@@ -262,21 +345,21 @@
   function mostrarPanel() {
     document.getElementById('login-section').style.display = 'none'
     document.getElementById('panel-section').style.display = 'block'
-    document.getElementById('btn-logout').style.display = 'block'
+    document.getElementById('app-header').style.display = 'flex'
     document.getElementById('empresa-nombre').textContent = companyData.name
     document.getElementById('empresa-tipo').textContent = companyData.type
-    document.getElementById('cita-fecha').value = new Date().toISOString().split('T')[0]
+    document.getElementById('header-emoji').textContent = EMOJIS[companyData.type] || '📅'
+    document.getElementById('cita-fecha').value = selectedDate
     cargarCitas()
   }
 
   function logout() {
     localStorage.removeItem('client_token')
     localStorage.removeItem('client_company')
-    token = null
-    companyData = null
+    token = null; companyData = null
     document.getElementById('login-section').style.display = 'flex'
     document.getElementById('panel-section').style.display = 'none'
-    document.getElementById('btn-logout').style.display = 'none'
+    document.getElementById('app-header').style.display = 'none'
   }
 
   async function cargarCitas() {
@@ -289,52 +372,135 @@
     const finSemana = new Date(); finSemana.setDate(finSemana.getDate() + 7)
     const finMes = new Date(); finMes.setDate(finMes.getDate() + 30)
 
-    const citasHoy = todasCitas.filter(c => new Date(c.date).toISOString().split('T')[0] === hoy && c.status === 'confirmed')
-    const citasSemana = todasCitas.filter(c => new Date(c.date) <= finSemana && new Date(c.date) >= new Date() && c.status === 'confirmed')
-    const citasMes = todasCitas.filter(c => new Date(c.date) <= finMes && new Date(c.date) >= new Date() && c.status === 'confirmed')
+    const hoyCount = todasCitas.filter(c => new Date(c.date).toISOString().split('T')[0] === hoy && c.status === 'confirmed').length
+    const semCount = todasCitas.filter(c => new Date(c.date) >= new Date() && new Date(c.date) <= finSemana && c.status === 'confirmed').length
+    const mesCount = todasCitas.filter(c => new Date(c.date) >= new Date() && new Date(c.date) <= finMes && c.status === 'confirmed').length
 
-    document.getElementById('stat-hoy').textContent = citasHoy.length
-    document.getElementById('stat-semana').textContent = citasSemana.length
-    document.getElementById('stat-mes').textContent = citasMes.length
+    document.getElementById('stat-hoy').textContent = hoyCount
+    document.getElementById('stat-semana').textContent = semCount
+    document.getElementById('stat-mes').textContent = mesCount
 
     renderCalendario()
-    renderCitas(selectedDate)
+    renderUpcoming()
+    renderDia(selectedDate)
   }
 
   function renderCalendario() {
     const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
     const dias = ['Lu','Ma','Mi','Ju','Vi','Sá','Do']
-    
     document.getElementById('cal-titulo').textContent = `${meses[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`
-    
+
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
     const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1
     const today = new Date().toISOString().split('T')[0]
 
-    const fechasConCitas = new Set(todasCitas
-      .filter(c => c.status === 'confirmed')
-      .map(c => new Date(c.date).toISOString().split('T')[0]))
+    const fechasConCitas = new Set(todasCitas.filter(c => c.status === 'confirmed').map(c => new Date(c.date).toISOString().split('T')[0]))
 
     let html = dias.map(d => `<div class="cal-day-name">${d}</div>`).join('')
-    
     for (let i = 0; i < startDay; i++) html += `<div class="cal-day empty"></div>`
-    
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
       const isToday = dateStr === today
       const hasCita = fechasConCitas.has(dateStr)
       const isSelected = selectedDate === dateStr
-      html += `<div class="cal-day ${isToday?'today':''} ${hasCita?'has-cita':''} ${isSelected?'selected':''}" onclick="selectDate('${dateStr}')">${d}</div>`
+      html += `<div class="cal-day ${isToday?'today':''} ${hasCita?'has-cita':''} ${isSelected&&!isToday?'selected':''}" onclick="selectDate('${dateStr}')">${d}</div>`
     }
-
     document.getElementById('cal-grid').innerHTML = html
   }
 
+  function renderUpcoming() {
+    const ahora = new Date()
+    const proximas = todasCitas
+      .filter(c => new Date(c.date) >= ahora && c.status === 'confirmed')
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 8)
+
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
+    const lista = document.getElementById('upcoming-list')
+
+    if (proximas.length === 0) {
+      lista.innerHTML = `<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px">No hay citas próximas</div>`
+      return
+    }
+
+    lista.innerHTML = proximas.map(c => {
+      const d = new Date(c.date)
+      const dateStr = d.toISOString().split('T')[0]
+      return `
+        <div class="upcoming-item ${selectedDate === dateStr ? 'selected' : ''}" onclick="selectDate('${dateStr}')">
+          <div class="upcoming-dot ${c.status}"></div>
+          <div class="upcoming-info">
+            <div class="upcoming-name">${c.clientName}</div>
+            <div class="upcoming-date">${d.getUTCDate()} ${meses[d.getUTCMonth()]} · ${c.service}</div>
+          </div>
+          <div class="upcoming-time">${c.time}</div>
+        </div>
+      `
+    }).join('')
+  }
+
+  function renderDia(fecha) {
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
+    const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado']
+    const d = new Date(fecha + 'T12:00:00')
+    const hoy = new Date().toISOString().split('T')[0]
+
+    document.getElementById('dia-titulo').textContent = fecha === hoy ? 'Hoy' : `${diasSemana[d.getDay()].charAt(0).toUpperCase() + diasSemana[d.getDay()].slice(1)}`
+    document.getElementById('dia-subtitulo').textContent = `${d.getUTCDate()} de ${meses[d.getUTCMonth()]} de ${d.getUTCFullYear()}`
+
+    const citasDelDia = todasCitas
+      .filter(c => new Date(c.date).toISOString().split('T')[0] === fecha)
+      .sort((a,b) => a.time.localeCompare(b.time))
+
+    const timeline = document.getElementById('timeline')
+
+    if (citasDelDia.length === 0) {
+      timeline.innerHTML = `
+        <div class="empty-day">
+          <div class="icon">📭</div>
+          <h3>Sin citas este día</h3>
+          <p>Haz clic en "+ Nueva cita" para agendar</p>
+        </div>`
+      return
+    }
+
+    let html = ''
+    HORAS.forEach(hora => {
+      const citasHora = citasDelDia.filter(c => c.time === hora)
+      if (citasHora.length === 0) return
+
+      html += `<div class="time-block">
+        <div class="time-label-col"><span>${hora}</span></div>
+        <div class="time-content has-appointment">`
+
+      citasHora.forEach(c => {
+        html += `
+          <div class="cita-card ${c.status}">
+            <div class="cita-card-header">
+              <div class="cita-nombre">${c.clientName}</div>
+              <div class="cita-hora-badge">${c.time} hrs</div>
+            </div>
+            <div class="cita-details">
+              <div class="cita-detail">💼 <strong>${c.service}</strong></div>
+              ${c.clientPhone ? `<div class="cita-detail">📱 ${c.clientPhone}</div>` : ''}
+            </div>
+            <span class="cita-badge badge-${c.status}">${c.status === 'confirmed' ? '✓ Confirmada' : c.status === 'cancelled' ? '✗ Cancelada' : '✓ Completada'}</span>
+            ${c.notes ? `<div class="cita-notes">📝 ${c.notes}</div>` : ''}
+          </div>`
+      })
+
+      html += `</div></div>`
+    })
+
+    timeline.innerHTML = html
+  }
+
   function selectDate(date) {
-    selectedDate = selectedDate === date ? null : date
+    selectedDate = date
     renderCalendario()
-    renderCitas(selectedDate)
+    renderUpcoming()
+    renderDia(date)
   }
 
   function cambiarMes(dir) {
@@ -342,50 +508,15 @@
     renderCalendario()
   }
 
-  function renderCitas(fecha) {
-    const lista = document.getElementById('citas-lista')
-    const titulo = document.getElementById('citas-titulo')
-
-    let citas = todasCitas.filter(c => new Date(c.date) >= new Date(new Date().setHours(0,0,0,0)))
-    
-    if (fecha) {
-      citas = todasCitas.filter(c => new Date(c.date).toISOString().split('T')[0] === fecha)
-      titulo.textContent = `Citas del ${fecha}`
-    } else {
-      titulo.textContent = 'Próximas citas'
-    }
-
-    citas.sort((a,b) => new Date(a.date) - new Date(b.date))
-
-    if (citas.length === 0) {
-      lista.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>${fecha ? 'No hay citas este día' : 'No hay citas próximas'}</p></div>`
-      return
-    }
-
-    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
-    lista.innerHTML = citas.map(c => {
-      const fecha = new Date(c.date)
-      return `
-        <div class="cita-card">
-          <div class="cita-fecha">
-            <div class="dia">${fecha.getUTCDate()}</div>
-            <div class="mes">${meses[fecha.getUTCMonth()]}</div>
-          </div>
-          <div class="cita-info">
-            <div class="nombre">${c.clientName}</div>
-            <div class="detalles">${c.service} · ${c.clientPhone}</div>
-            <span class="badge badge-${c.status}">${c.status === 'confirmed' ? 'Confirmada' : c.status === 'cancelled' ? 'Cancelada' : 'Completada'}</span>
-          </div>
-          <div class="cita-hora">
-            ${c.time}
-            <span>hrs</span>
-          </div>
-        </div>
-      `
-    }).join('')
+  function abrirModal() {
+    document.getElementById('cita-fecha').value = selectedDate
+    document.getElementById('cita-nombre').value = ''
+    document.getElementById('cita-telefono').value = ''
+    document.getElementById('cita-servicio').value = ''
+    document.getElementById('cita-notas').value = ''
+    document.getElementById('modal-cita').classList.add('active')
   }
 
-  function abrirModal() { document.getElementById('modal-cita').classList.add('active') }
   function cerrarModal() { document.getElementById('modal-cita').classList.remove('active') }
 
   async function guardarCita() {
@@ -395,15 +526,12 @@
     const time = document.getElementById('cita-hora').value
     const service = document.getElementById('cita-servicio').value
     const notes = document.getElementById('cita-notas').value
-
     if (!clientName || !date) { alert('Nombre y fecha son obligatorios'); return }
-
     await fetch(`${API}/appointments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ companyId: companyData.id, clientPhone, clientName, date, time, service, notes })
     })
-
     cerrarModal()
     cargarCitas()
   }
