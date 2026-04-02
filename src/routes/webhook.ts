@@ -5,47 +5,82 @@ import { detectAppointmentIntent, extractAppointmentData, getAvailableSlots, cre
 
 const router = Router()
 
+async function sendWhatsAppMessage(to: string, message: string) {
+  const apiKey = process.env.WASENDER_API_KEY
+  const url = 'https://wasenderapi.com/api/send-message'
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      to: to,
+      text: message
+    })
+  })
+
+  const data = await response.json()
+  console.log('WasenderAPI response:', data)
+  return data
+}
+
 router.post('/', async (req: Request, res: Response) => {
-  const { From, Body, To } = req.body
-
-  console.log(`Mensaje de ${From} para ${To}: ${Body}`)
-
-  const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response></Response>`
-  res.type('text/xml')
-  res.send(twiml)
+  // Responder inmediatamente a WasenderAPI
+  res.status(200).json({ status: 'ok' })
 
   try {
-    const company = await prisma.company.findUnique({
-      where: { phone: To, active: true }
-    })
+    const body = req.body
+    console.log('Webhook recibido:', JSON.stringify(body))
 
-    if (!company) {
-      console.log(`No se encontró empresa activa para ${To}`)
+    // Extraer datos del formato WasenderAPI
+    const message = body?.data?.message
+    const from = body?.data?.from || body?.data?.sender
+    const text = body?.data?.text?.body || body?.data?.message?.conversation || body?.data?.body || ''
+    const type = body?.data?.type || body?.type
+
+    // Solo procesar mensajes de texto entrantes
+    if (!text || !from) {
+      console.log('Mensaje sin texto o sin remitente, ignorando')
       return
     }
 
-    const twilio = require('twilio')(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    )
+    // Ignorar mensajes enviados por nosotros
+    if (body?.data?.fromMe === true) {
+      console.log('Mensaje propio, ignorando')
+      return
+    }
 
-    // Detectar intención de cita
-    const intent = await detectAppointmentIntent(Body)
+    console.log(`Mensaje de ${from}: ${text}`)
+
+    // Buscar empresa activa — como WasenderAPI no tiene multi-número por webhook
+    // usamos la primera empresa activa o buscamos por número de sesión
+    const company = await prisma.company.findFirst({
+      where: { active: true }
+    })
+
+    if (!company) {
+      console.log('No se encontró empresa activa')
+      return
+    }
+
+    // Detectar intención
+    const intent = await detectAppointmentIntent(text)
     console.log(`Intención detectada: ${intent}`)
 
     let responseMessage = ''
 
     if (intent === 'AGENDAR') {
-      const data = await extractAppointmentData(Body, company.type)
-      
+      const data = await extractAppointmentData(text, company.type)
+
       if (data.date && data.time) {
         const slots = await getAvailableSlots(company.id, data.date)
-        
+
         if (slots.includes(data.time)) {
           await createAppointment(
             company.id,
-            From,
+            from,
             data.clientName || 'Cliente',
             data.date,
             data.time,
@@ -64,7 +99,7 @@ router.post('/', async (req: Request, res: Response) => {
       }
 
     } else if (intent === 'CANCELAR') {
-      const citas = await getClientAppointments(company.id, From)
+      const citas = await getClientAppointments(company.id, from)
       if (citas.length === 0) {
         responseMessage = 'No encontré citas activas para cancelar.'
       } else {
@@ -77,7 +112,7 @@ router.post('/', async (req: Request, res: Response) => {
       }
 
     } else if (intent === 'CONSULTAR') {
-      const citas = await getClientAppointments(company.id, From)
+      const citas = await getClientAppointments(company.id, from)
       if (citas.length === 0) {
         responseMessage = 'No tienes citas próximas agendadas.'
       } else {
@@ -86,27 +121,25 @@ router.post('/', async (req: Request, res: Response) => {
       }
 
     } else {
-      responseMessage = await getAIResponse(Body, From, company.prompt)
+      responseMessage = await getAIResponse(text, from, company.prompt)
     }
 
+    // Guardar conversación
     await prisma.conversation.create({
       data: {
         companyId: company.id,
-        from: From,
-        message: Body,
+        from: from,
+        message: text,
         response: responseMessage
       }
     })
 
-    await twilio.messages.create({
-      from: To,
-      to: From,
-      body: responseMessage
-    })
+    // Enviar respuesta
+    await sendWhatsAppMessage(from, responseMessage)
+    console.log(`Respuesta enviada a ${from}: ${responseMessage}`)
 
-    console.log(`Respuesta enviada: ${responseMessage}`)
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error en webhook:', error)
   }
 })
 
