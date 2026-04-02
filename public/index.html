@@ -5,60 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WhatsApp SaaS — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #1e293b; }
-  
-  header {
-    background: #1e293b;
-    color: white;
-    padding: 16px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-  }
+  header { background: #1e293b; color: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
   header h1 { font-size: 18px; font-weight: 700; }
-
-  .nav-tabs {
-    display: flex;
-    gap: 4px;
-    background: rgba(255,255,255,0.1);
-    padding: 4px;
-    border-radius: 8px;
-  }
-  .nav-tab {
-    padding: 6px 16px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    background: none;
-  }
+  .nav-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.1); padding: 4px; border-radius: 8px; }
+  .nav-tab { padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #94a3b8; cursor: pointer; transition: all 0.2s; border: none; background: none; }
   .nav-tab.active { background: white; color: #1e293b; }
   .nav-tab:hover:not(.active) { color: white; }
-
   .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-
   .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 80vh; }
-  .login-box {
-    background: white; border-radius: 16px; padding: 40px;
-    width: 100%; max-width: 400px; border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-  }
+  .login-box { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; border: 1px solid #e2e8f0; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
   .login-box h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
   .login-box p { font-size: 14px; color: #64748b; margin-bottom: 28px; }
-
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
   .stat-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; }
   .stat-card .number { font-size: 32px; font-weight: 700; }
   .stat-card .label { font-size: 12px; color: #64748b; margin-top: 4px; }
-
   button { cursor: pointer; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.2s; }
   button:hover { opacity: 0.85; }
   .btn-primary { background: #3b82f6; color: white; padding: 10px 20px; font-size: 14px; }
@@ -67,83 +32,73 @@
   .btn-secondary { background: #e2e8f0; color: #1e293b; padding: 6px 12px; font-size: 12px; }
   .btn-logout { background: #475569; color: white; padding: 8px 16px; font-size: 13px; }
   .btn-sm { padding: 5px 10px; font-size: 11px; }
-
+  .btn-green { background: #16a34a; color: white; padding: 10px 20px; font-size: 14px; }
   table { width: 100%; background: white; border-radius: 12px; border: 1px solid #e2e8f0; border-collapse: collapse; overflow: hidden; }
   th { background: #f8fafc; padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
-  td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+  td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
   tr:last-child td { border-bottom: none; }
-
   .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .badge-active { background: #dcfce7; color: #16a34a; }
   .badge-inactive { background: #fee2e2; color: #dc2626; }
-  .badge-confirmed { background: #dbeafe; color: #2563eb; }
-  .badge-cancelled { background: #fee2e2; color: #dc2626; }
-  .badge-completed { background: #dcfce7; color: #16a34a; }
   .type-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; background: #eff6ff; color: #3b82f6; }
-
   .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .section-header h2 { font-size: 18px; font-weight: 600; }
-
-  .calendar-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-  .calendar-nav { display: flex; align-items: center; gap: 12px; }
-  .calendar-nav button { background: white; border: 1px solid #e2e8f0; color: #1e293b; padding: 8px 14px; font-size: 14px; border-radius: 8px; }
-  .calendar-nav span { font-size: 18px; font-weight: 700; min-width: 200px; text-align: center; }
-
-  .company-select { padding: 8px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; background: white; outline: none; }
-
-  .week-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; }
-  .week-header { background: #f8fafc; padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 600; color: #64748b; }
-  .week-header.today { background: #eff6ff; color: #3b82f6; }
-  .time-slot { background: white; padding: 4px 6px; min-height: 48px; position: relative; font-size: 11px; color: #94a3b8; display: flex; align-items: flex-start; }
-  .time-label { background: #f8fafc; padding: 4px 8px; min-height: 48px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #94a3b8; font-weight: 500; }
-
-  .appointment-block {
-    background: #3b82f6; color: white; border-radius: 6px; padding: 4px 8px;
-    font-size: 11px; font-weight: 500; cursor: pointer; width: 100%;
-    text-align: left; line-height: 1.3; transition: opacity 0.2s;
-  }
-  .appointment-block:hover { opacity: 0.85; }
-  .appointment-block.cancelled { background: #ef4444; }
-  .appointment-block.completed { background: #22c55e; }
-
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
   .modal-overlay.active { display: flex; }
   .modal { background: white; border-radius: 16px; padding: 32px; width: 100%; max-width: 500px; margin: 24px; max-height: 90vh; overflow-y: auto; }
   .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
-
   .form-group { margin-bottom: 16px; }
   .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #374151; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px;
-    font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s;
-  }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #3b82f6; }
   .form-group textarea { height: 80px; resize: vertical; }
   .form-divider { border: none; border-top: 1px solid #e2e8f0; margin: 16px 0; }
-
   .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
   .empty { text-align: center; padding: 48px; color: #94a3b8; }
   .error-msg { color: #ef4444; font-size: 13px; margin-top: 8px; display: none; }
-
   .page { display: none; }
   .page.active { display: block; }
-
-  .credentials-box {
-    background: #f0fdf4;
-    border: 1px solid #86efac;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #166534;
-    margin-top: 4px;
-  }
-
-  @media (max-width: 768px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .week-grid { grid-template-columns: 60px repeat(7, 1fr); }
-    header { padding: 12px 16px; }
-    .container { padding: 16px; }
-  }
+  .credentials-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #166534; margin-top: 8px; }
+  /* Agenda */
+  .week-grid { display: grid; grid-template-columns: 80px repeat(7,1fr); gap: 1px; background: #e2e8f0; border-radius: 12px; overflow: hidden; }
+  /* Campañas */
+  .campaign-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+  .upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; background: white; margin-bottom: 20px; }
+  .upload-zone:hover { border-color: #3b82f6; background: #eff6ff; }
+  .upload-zone .icon { font-size: 36px; margin-bottom: 8px; }
+  .upload-zone p { font-size: 14px; color: #64748b; }
+  .contacts-table-wrap { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+  .contacts-header { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+  .contacts-count { background: #eff6ff; color: #3b82f6; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .contact-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 12px; }
+  .contact-row:last-child { border-bottom: none; }
+  .contact-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .contact-info { flex: 1; min-width: 0; }
+  .contact-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .contact-phone { font-size: 12px; color: #64748b; }
+  .contact-type { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #eff6ff; color: #3b82f6; font-weight: 500; flex-shrink: 0; }
+  .message-composer { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; position: sticky; top: 90px; }
+  .message-composer h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+  .template-btn { padding: 10px 14px; border-radius: 8px; font-size: 13px; text-align: left; background: #f8fafc; border: 1.5px solid #e2e8f0; color: #374151; transition: all 0.2s; width: 100%; margin-bottom: 8px; }
+  .template-btn:hover, .template-btn.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+  .template-btn .t-label { font-weight: 600; font-size: 12px; }
+  .template-btn .t-desc { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .message-preview { background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 14px; font-size: 13px; color: #166534; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.6; min-height: 80px; }
+  .send-stats { display: flex; gap: 12px; margin-bottom: 16px; }
+  .send-stat { flex: 1; background: #f8fafc; border-radius: 8px; padding: 10px; text-align: center; }
+  .send-stat .n { font-size: 20px; font-weight: 700; color: #3b82f6; }
+  .send-stat .l { font-size: 11px; color: #64748b; }
+  .progress-bar-wrap { background: #e2e8f0; border-radius: 20px; height: 8px; margin-bottom: 12px; overflow: hidden; display: none; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 20px; transition: width 0.3s; width: 0%; }
+  .send-log { max-height: 160px; overflow-y: auto; font-size: 12px; color: #64748b; }
+  .log-item { padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
+  .log-ok { color: #16a34a; }
+  .log-err { color: #ef4444; }
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-btn { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; background: white; border: 1.5px solid #e2e8f0; color: #64748b; }
+  .filter-btn.active { background: #1e293b; color: white; border-color: #1e293b; }
+  .select-all-bar { padding: 10px 20px; background: #eff6ff; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #1d4ed8; border-bottom: 1px solid #bfdbfe; }
+  @media (max-width: 900px) { .campaign-layout { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2,1fr); } }
 </style>
 </head>
 <body>
@@ -151,114 +106,124 @@
 <header>
   <h1>⚡ WhatsApp SaaS</h1>
   <div class="nav-tabs" id="nav-tabs" style="display:none">
-    <button class="nav-tab active" onclick="showPage('empresas', event)">Empresas</button>
-    <button class="nav-tab" onclick="showPage('agenda', event)">Agenda</button>
-    <button class="nav-tab" onclick="showPage('conversaciones', event)">Conversaciones</button>
+    <button class="nav-tab active" onclick="showPage('empresas',this)">Empresas</button>
+    <button class="nav-tab" onclick="showPage('agenda',this)">Agenda</button>
+    <button class="nav-tab" onclick="showPage('campanas',this)">📣 Campañas</button>
   </div>
   <button class="btn-logout" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
 </header>
 
 <div class="container">
-
-  <!-- LOGIN -->
   <div class="login-wrap" id="login-section">
     <div class="login-box">
       <h2>🔐 Iniciar sesión</h2>
       <p>Acceso exclusivo para administradores</p>
-      <div class="form-group">
-        <label>Usuario</label>
-        <input type="text" id="login-user" placeholder="admin">
-      </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()">
-      </div>
+      <div class="form-group"><label>Usuario</label><input type="text" id="login-user" placeholder="admin"></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()"></div>
       <p class="error-msg" id="login-error">Usuario o contraseña incorrectos</p>
       <button class="btn-primary" style="width:100%;margin-top:8px" onclick="login()">Entrar</button>
     </div>
   </div>
 
-  <!-- EMPRESAS -->
-  <div id="page-empresas" class="page" style="display:none">
+  <div id="page-empresas" class="page">
     <div class="stats">
-      <div class="stat-card">
-        <div class="number" id="total-empresas">0</div>
-        <div class="label">Empresas activas</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="total-citas">0</div>
-        <div class="label">Citas hoy</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="total-conversaciones">0</div>
-        <div class="label">Mensajes hoy</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="total-ingresos">$0</div>
-        <div class="label">Ingresos est. mensuales</div>
-      </div>
+      <div class="stat-card"><div class="number" id="total-empresas">0</div><div class="label">Empresas activas</div></div>
+      <div class="stat-card"><div class="number" id="total-citas">0</div><div class="label">Citas hoy</div></div>
+      <div class="stat-card"><div class="number" id="total-conversaciones">0</div><div class="label">Mensajes hoy</div></div>
+      <div class="stat-card"><div class="number" id="total-ingresos">$0</div><div class="label">Ingresos est. mensuales</div></div>
     </div>
-
     <div class="section-header">
       <h2>Empresas</h2>
       <button class="btn-primary" onclick="abrirModalEmpresa()">+ Nueva empresa</button>
     </div>
-
     <table>
-      <thead>
-        <tr>
-          <th>Empresa</th><th>Tipo</th><th>Número</th><th>Usuario</th><th>Estado</th><th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-empresas">
-        <tr><td colspan="6" class="empty">No hay empresas aún</td></tr>
-      </tbody>
+      <thead><tr><th>Empresa</th><th>Tipo</th><th>Número</th><th>Usuario</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="tabla-empresas"><tr><td colspan="6" class="empty">No hay empresas aún</td></tr></tbody>
     </table>
   </div>
 
-  <!-- AGENDA -->
-  <div id="page-agenda" class="page" style="display:none">
-    <div class="calendar-header">
-      <div class="calendar-nav">
-        <button onclick="cambiarSemana(-1)">← Ant</button>
-        <span id="semana-label">Cargando...</span>
-        <button onclick="cambiarSemana(1)">Sig →</button>
+  <div id="page-agenda" class="page">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button style="background:white;border:1px solid #e2e8f0;color:#1e293b;padding:8px 14px;font-size:14px;border-radius:8px" onclick="cambiarSemana(-1)">← Ant</button>
+        <span id="semana-label" style="font-size:18px;font-weight:700;min-width:200px;text-align:center">Cargando...</span>
+        <button style="background:white;border:1px solid #e2e8f0;color:#1e293b;padding:8px 14px;font-size:14px;border-radius:8px" onclick="cambiarSemana(1)">Sig →</button>
       </div>
-      <select class="company-select" id="empresa-select" onchange="cargarAgenda()">
-        <option value="">Selecciona empresa</option>
-      </select>
+      <select style="padding:8px 14px;border:1px solid #e2e8f0;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;background:white;outline:none" id="empresa-select" onchange="cargarAgenda()"><option value="">Selecciona empresa</option></select>
       <button class="btn-primary" onclick="abrirModalCita()">+ Nueva cita</button>
     </div>
     <div class="week-grid" id="week-grid"></div>
   </div>
 
-  <!-- CONVERSACIONES -->
-  <div id="page-conversaciones" class="page" style="display:none">
-    <div class="section-header">
-      <h2>Conversaciones recientes</h2>
-      <select class="company-select" id="conv-empresa-select" onchange="cargarConversaciones()">
-        <option value="">Todas las empresas</option>
-      </select>
+  <div id="page-campanas" class="page">
+    <div class="section-header" style="margin-bottom:20px">
+      <div>
+        <h2>📣 Campañas de WhatsApp</h2>
+        <p style="font-size:13px;color:#64748b;margin-top:4px">Importa tu Excel y manda mensajes masivos a tus prospectos</p>
+      </div>
     </div>
-    <table>
-      <thead>
-        <tr><th>Empresa</th><th>Cliente</th><th>Mensaje</th><th>Respuesta</th><th>Fecha</th></tr>
-      </thead>
-      <tbody id="tabla-conversaciones">
-        <tr><td colspan="5" class="empty">No hay conversaciones</td></tr>
-      </tbody>
-    </table>
+    <div class="campaign-layout">
+      <div>
+        <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+          <div class="icon">📊</div>
+          <p><strong>Haz clic para subir tu Excel</strong></p>
+          <p style="font-size:12px;margin-top:4px">Columnas necesarias: Nombre, Teléfono</p>
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="importarExcel(this)">
+        </div>
+        <div class="filter-bar" id="filter-bar" style="display:none">
+          <button class="filter-btn active" onclick="filtrarContactos('todos',this)">Todos <span id="count-todos"></span></button>
+          <button class="filter-btn" onclick="filtrarContactos('dentista',this)">🦷 Dentistas <span id="count-dentista"></span></button>
+          <button class="filter-btn" onclick="filtrarContactos('estetica',this)">✂️ Estéticas <span id="count-estetica"></span></button>
+          <button class="filter-btn" onclick="filtrarContactos('veterinaria',this)">🐾 Veterinarias <span id="count-veterinaria"></span></button>
+          <button class="filter-btn" onclick="filtrarContactos('psicologo',this)">🧠 Psicólogos <span id="count-psicologo"></span></button>
+          <button class="filter-btn" onclick="filtrarContactos('nutriologo',this)">🥗 Nutriólogos <span id="count-nutriologo"></span></button>
+        </div>
+        <div class="contacts-table-wrap" id="contacts-wrap" style="display:none">
+          <div class="contacts-header">
+            <span>Contactos</span>
+            <span class="contacts-count" id="contacts-count">0 contactos</span>
+          </div>
+          <div class="select-all-bar">
+            <input type="checkbox" id="check-all" onchange="selectAll(this.checked)" style="width:16px;height:16px;cursor:pointer">
+            <label for="check-all" style="cursor:pointer">Seleccionar todos</label>
+            <span id="selected-count" style="margin-left:auto;font-weight:600">0 seleccionados</span>
+          </div>
+          <div id="contacts-list" style="max-height:480px;overflow-y:auto"></div>
+        </div>
+      </div>
+      <div>
+        <div class="message-composer">
+          <h3>✉️ Mensaje</h3>
+          <div class="form-group"><label>Plantilla</label>
+            <button class="template-btn active" onclick="selectTemplate(0,this)"><div class="t-label">🎯 Prospección general</div><div class="t-desc">Para cualquier tipo de negocio</div></button>
+            <button class="template-btn" onclick="selectTemplate(1,this)"><div class="t-label">🦷 Para dentistas</div><div class="t-desc">Enfocado en citas y pacientes</div></button>
+            <button class="template-btn" onclick="selectTemplate(2,this)"><div class="t-label">✂️ Para estéticas</div><div class="t-desc">Enfocado en reservas y servicios</div></button>
+            <button class="template-btn" onclick="selectTemplate(3,this)"><div class="t-label">✍️ Personalizado</div><div class="t-desc">Escribe tu propio mensaje</div></button>
+          </div>
+          <div class="form-group" id="custom-msg-group" style="display:none">
+            <label>Tu mensaje (usa {{nombre}} para personalizar)</label>
+            <textarea id="custom-message" placeholder="Hola {{nombre}}, ..." oninput="actualizarPreview()"></textarea>
+          </div>
+          <div class="form-group"><label>Vista previa</label><div class="message-preview" id="message-preview"></div></div>
+          <div class="send-stats">
+            <div class="send-stat"><div class="n" id="stat-seleccionados">0</div><div class="l">Seleccionados</div></div>
+            <div class="send-stat"><div class="n" id="stat-enviados">0</div><div class="l">Enviados</div></div>
+            <div class="send-stat"><div class="n" id="stat-errores">0</div><div class="l">Errores</div></div>
+          </div>
+          <div class="progress-bar-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+          <button class="btn-green" style="width:100%;margin-bottom:12px;border-radius:8px" onclick="enviarCampana()">🚀 Enviar campaña</button>
+          <div class="send-log" id="send-log"></div>
+        </div>
+      </div>
+    </div>
   </div>
-
 </div>
-
 <!-- Modal empresa -->
 <div class="modal-overlay" id="modal-empresa">
   <div class="modal">
     <h3>Nueva empresa</h3>
     <div class="form-group"><label>Nombre del negocio</label><input type="text" id="input-name" placeholder="Dentista García"></div>
-    <div class="form-group">
-      <label>Tipo de negocio</label>
+    <div class="form-group"><label>Tipo de negocio</label>
       <select id="input-type">
         <option value="dentista">🦷 Dentista</option>
         <option value="psicologo">🧠 Psicólogo</option>
@@ -267,15 +232,15 @@
         <option value="nutriologo">🥗 Nutriólogo</option>
       </select>
     </div>
-    <div class="form-group"><label>Número WhatsApp (Twilio)</label><input type="text" id="input-phone" placeholder="whatsapp:+14155238886"></div>
+    <div class="form-group"><label>Número WhatsApp</label><input type="text" id="input-phone" placeholder="+522281160913"></div>
     <div class="form-group"><label>Prompt del bot</label><textarea id="input-prompt" placeholder="Eres el asistente virtual de..."></textarea></div>
     <hr class="form-divider">
     <div class="form-group">
-      <label>Usuario (para que el cliente entre a su panel)</label>
+      <label>Usuario del cliente</label>
       <input type="text" id="input-username" placeholder="dentistagarcía">
-      <div class="credentials-box" style="margin-top:8px">🔗 El cliente entrará en: <strong>tu-url.railway.app/cliente.html</strong></div>
+      <div class="credentials-box">🔗 Panel cliente: <strong>tu-url.railway.app/cliente.html</strong></div>
     </div>
-    <div class="form-group"><label>Contraseña inicial del cliente</label><input type="text" id="input-password" placeholder="cambiar123"></div>
+    <div class="form-group"><label>Contraseña inicial</label><input type="text" id="input-password" placeholder="cambiar123"></div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="cerrarModal('modal-empresa')">Cancelar</button>
       <button class="btn-primary" onclick="guardarEmpresa()">Guardar</button>
@@ -287,11 +252,9 @@
 <div class="modal-overlay" id="modal-cita">
   <div class="modal">
     <h3 id="modal-cita-titulo">Nueva cita</h3>
-    <div class="form-group"><label>Empresa</label>
-      <select id="cita-empresa"><option value="">Selecciona empresa</option></select>
-    </div>
+    <div class="form-group"><label>Empresa</label><select id="cita-empresa"><option value="">Selecciona empresa</option></select></div>
     <div class="form-group"><label>Nombre del cliente</label><input type="text" id="cita-nombre" placeholder="Juan García"></div>
-    <div class="form-group"><label>Teléfono del cliente</label><input type="text" id="cita-telefono" placeholder="+521234567890"></div>
+    <div class="form-group"><label>Teléfono</label><input type="text" id="cita-telefono" placeholder="+521234567890"></div>
     <div class="form-group"><label>Fecha</label><input type="date" id="cita-fecha"></div>
     <div class="form-group"><label>Hora</label>
       <select id="cita-hora">
@@ -317,6 +280,20 @@
   let empresas = []
   let currentWeekStart = getMonday(new Date())
   let editingCitaId = null
+  let contactos = []
+  let contactosFiltrados = []
+  let filtroActual = 'todos'
+  let enviados = 0
+  let errores = 0
+
+  const TEMPLATES = [
+    `Hola {{nombre}} 👋\n\nSoy Juan, te escribo porque tenemos una solución que puede ayudarte a *nunca perder una cita* en tu negocio.\n\n🤖 AgendaBot es un asistente de WhatsApp que responde a tus clientes *automáticamente* las 24hrs, agenda citas y les manda recordatorios.\n\n¿Te gustaría ver cómo funciona? Te hago una demo gratis de 15 minutos esta semana. 📅`,
+    `Hola {{nombre}} 👋\n\n¿Cuántas llamadas pierdes al día porque estás con un paciente?\n\n🦷 AgendaBot responde por WhatsApp *automáticamente*, agenda citas y manda recordatorios a tus pacientes. Sin que tú hagas nada.\n\nTe hago una demo gratis esta semana. ¿Tienes 15 minutos? 📅`,
+    `Hola {{nombre}} 👋\n\n¿Tus clientes te escriben por WhatsApp para agendar y a veces no puedes responder rápido?\n\n✂️ AgendaBot atiende a tus clientes *las 24hrs*, agenda citas automáticamente y les manda recordatorios para que no falten.\n\nTe hago una demo gratis. ¿Cuándo tienes 15 minutos? 📅`,
+    ''
+  ]
+
+  let templateActual = 0
 
   if (token) mostrarPanel()
 
@@ -351,8 +328,9 @@
     document.getElementById('login-section').style.display = 'none'
     document.getElementById('nav-tabs').style.display = 'flex'
     document.getElementById('btn-logout').style.display = 'block'
-    showPage('empresas')
+    showPage('empresas', document.querySelector('.nav-tab'))
     cargarEmpresas()
+    selectTemplate(0, document.querySelector('.template-btn'))
   }
 
   function logout() {
@@ -361,37 +339,29 @@
     document.getElementById('login-section').style.display = 'flex'
     document.getElementById('nav-tabs').style.display = 'none'
     document.getElementById('btn-logout').style.display = 'none'
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none')
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
   }
 
-  function showPage(page, event) {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none')
+  function showPage(page, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'))
-    document.getElementById(`page-${page}`).style.display = 'block'
-    if (event?.target) event.target.classList.add('active')
+    document.getElementById(`page-${page}`).classList.add('active')
+    if (el) el.classList.add('active')
     if (page === 'agenda') cargarAgenda()
-    if (page === 'conversaciones') cargarConversaciones()
   }
 
   async function cargarEmpresas() {
     const res = await fetch(`${API}/companies`, { headers: { 'Authorization': `Bearer ${token}` } })
     if (res.status === 401) { logout(); return }
     empresas = await res.json()
-
     const activas = empresas.filter(e => e.active).length
     document.getElementById('total-empresas').textContent = activas
     document.getElementById('total-ingresos').textContent = `$${(activas * 800).toLocaleString()}`
-
     const options = empresas.map(e => `<option value="${e.id}">${e.name}</option>`).join('')
     document.getElementById('empresa-select').innerHTML = `<option value="">Selecciona empresa</option>${options}`
-    document.getElementById('conv-empresa-select').innerHTML = `<option value="">Todas las empresas</option>${options}`
     document.getElementById('cita-empresa').innerHTML = `<option value="">Selecciona empresa</option>${options}`
-
     const tbody = document.getElementById('tabla-empresas')
-    if (empresas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty">No hay empresas aún</td></tr>`
-      return
-    }
+    if (empresas.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="empty">No hay empresas aún</td></tr>`; return }
     tbody.innerHTML = empresas.map(e => `
       <tr>
         <td><strong>${e.name}</strong></td>
@@ -400,114 +370,215 @@
         <td><code style="font-size:12px;background:#f1f5f9;padding:2px 8px;border-radius:4px">${e.username}</code></td>
         <td><span class="badge ${e.active ? 'badge-active' : 'badge-inactive'}">${e.active ? 'Activo' : 'Inactivo'}</span></td>
         <td style="display:flex;gap:8px">
-          <button class="btn-${e.active ? 'danger' : 'success'} btn-sm" onclick="toggleEmpresa('${e.id}', ${e.active})">${e.active ? 'Desactivar' : 'Activar'}</button>
+          <button class="btn-${e.active ? 'danger' : 'success'} btn-sm" onclick="toggleEmpresa('${e.id}',${e.active})">${e.active ? 'Desactivar' : 'Activar'}</button>
           <button class="btn-danger btn-sm" onclick="eliminarEmpresa('${e.id}')">Eliminar</button>
         </td>
-      </tr>
-    `).join('')
+      </tr>`).join('')
   }
 
   async function cargarAgenda() {
     const companyId = document.getElementById('empresa-select').value
-    const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+    const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']
     const horas = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','15:00','15:30','16:00','16:30','17:00','17:30']
-
     const weekDays = []
     for (let i = 0; i < 7; i++) {
       const d = new Date(currentWeekStart)
       d.setDate(d.getDate() + i)
       weekDays.push(d)
     }
-
     document.getElementById('semana-label').textContent =
-      `${weekDays[0].getDate()} ${weekDays[0].toLocaleString('es-MX', {month:'short'})} — ${weekDays[6].getDate()} ${weekDays[6].toLocaleString('es-MX', {month:'short', year:'numeric'})}`
-
+      `${weekDays[0].getDate()} ${weekDays[0].toLocaleString('es-MX',{month:'short'})} — ${weekDays[6].getDate()} ${weekDays[6].toLocaleString('es-MX',{month:'short',year:'numeric'})}`
     let citas = []
     if (companyId) {
-      try {
-        const res = await fetch(`${API}/appointments/${companyId}`, { headers: { 'Authorization': `Bearer ${token}` } })
-        citas = await res.json()
-      } catch(e) {}
+      try { const res = await fetch(`${API}/appointments/${companyId}`, { headers: { 'Authorization': `Bearer ${token}` } }); citas = await res.json() } catch(e) {}
     }
-
     const today = new Date().toISOString().split('T')[0]
     const grid = document.getElementById('week-grid')
-
-    let html = `<div class="week-header"></div>`
-    weekDays.forEach((d, i) => {
-      const dateStr = d.toISOString().split('T')[0]
-      const isToday = dateStr === today
-      html += `<div class="week-header ${isToday ? 'today' : ''}">${dias[i]}<br><strong>${d.getDate()}</strong></div>`
+    let html = `<div style="background:#f8fafc;padding:12px 8px;text-align:center;font-size:12px;font-weight:600;color:#64748b"></div>`
+    weekDays.forEach((d,i) => {
+      const isToday = d.toISOString().split('T')[0] === today
+      html += `<div style="background:${isToday?'#eff6ff':'#f8fafc'};padding:12px 8px;text-align:center;font-size:12px;font-weight:600;color:${isToday?'#3b82f6':'#64748b'}">${dias[i]}<br><strong>${d.getDate()}</strong></div>`
     })
-
     horas.forEach(hora => {
-      html += `<div class="time-label">${hora}</div>`
+      html += `<div style="background:#f8fafc;padding:4px 8px;min-height:48px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#94a3b8">${hora}</div>`
       weekDays.forEach(d => {
         const dateStr = d.toISOString().split('T')[0]
-        const citasSlot = citas.filter(c => {
-          const citaDate = new Date(c.date).toISOString().split('T')[0]
-          return citaDate === dateStr && c.time === hora
-        })
-        html += `<div class="time-slot" onclick="abrirModalCitaFecha('${dateStr}', '${hora}')">`
+        const citasSlot = citas.filter(c => new Date(c.date).toISOString().split('T')[0] === dateStr && c.time === hora)
+        html += `<div style="background:white;padding:4px 6px;min-height:48px">`
         citasSlot.forEach(c => {
-          html += `<button class="appointment-block ${c.status}" onclick="event.stopPropagation();editarCita('${c.id}')">${c.clientName}<br>${c.service}</button>`
+          const color = c.status==='cancelled'?'#ef4444':c.status==='completed'?'#22c55e':'#3b82f6'
+          html += `<div style="background:${color};color:white;border-radius:6px;padding:4px 8px;font-size:11px;margin-bottom:2px;cursor:pointer" onclick="editarCita('${c.id}')">${c.clientName}<br>${c.service}</div>`
         })
         html += `</div>`
       })
     })
-
     grid.innerHTML = html
   }
 
-  function cambiarSemana(dir) {
-    currentWeekStart.setDate(currentWeekStart.getDate() + (dir * 7))
-    cargarAgenda()
+  function cambiarSemana(dir) { currentWeekStart.setDate(currentWeekStart.getDate()+(dir*7)); cargarAgenda() }
+
+  function importarExcel(input) {
+    const file = input.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = function(e) {
+      const data = new Uint8Array(e.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
+      const sheet = workbook.Sheets[workbook.SheetNames[0]]
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+      const nuevos = []
+      rows.forEach(row => {
+        const nombre = row['Nombre'] || row['nombre'] || ''
+        let telefono = row['Teléfono'] || row['Telefono'] || row['telefono'] || ''
+        const tipo = row['Tipo'] || row['tipo'] || inferirTipo(nombre)
+        telefono = String(telefono).split(/[;,]/)[0].trim()
+        telefono = limpiarTelefono(telefono)
+        if (nombre && telefono) nuevos.push({ nombre, telefono, tipo, seleccionado: true })
+      })
+      contactos = [...contactos, ...nuevos]
+      filtrarContactos(filtroActual)
+      actualizarConteos()
+      document.getElementById('filter-bar').style.display = 'flex'
+      document.getElementById('contacts-wrap').style.display = 'block'
+      input.value = ''
+    }
+    reader.readAsArrayBuffer(file)
   }
 
-  async function cargarConversaciones() {
-    const tbody = document.getElementById('tabla-conversaciones')
-    tbody.innerHTML = `<tr><td colspan="5" class="empty">Próximamente</td></tr>`
+  function inferirTipo(nombre) {
+    nombre = nombre.toLowerCase()
+    if (nombre.includes('dent')||nombre.includes('odont')||nombre.includes('clinic')) return 'dentista'
+    if (nombre.includes('psic')) return 'psicologo'
+    if (nombre.includes('estét')||nombre.includes('estet')||nombre.includes('salon')||nombre.includes('barb')||nombre.includes('spa')||nombre.includes('belleza')) return 'estetica'
+    if (nombre.includes('vet')||nombre.includes('mascot')) return 'veterinaria'
+    if (nombre.includes('nutri')) return 'nutriologo'
+    return 'negocio'
+  }
+
+  function limpiarTelefono(tel) {
+    tel = String(tel).replace(/[\s\-\(\)\.]/g,'')
+    if (!tel.startsWith('+')) {
+      if (tel.startsWith('52')) tel = '+' + tel
+      else tel = '+52' + tel
+    }
+    return tel
+  }
+
+  function actualizarConteos() {
+    document.getElementById('count-todos').textContent = `(${contactos.length})`
+    ;['dentista','estetica','veterinaria','psicologo','nutriologo'].forEach(t => {
+      const el = document.getElementById(`count-${t}`)
+      if (el) el.textContent = `(${contactos.filter(c=>c.tipo===t).length})`
+    })
+  }
+
+  function filtrarContactos(tipo, btn) {
+    filtroActual = tipo
+    if (btn) { document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active') }
+    contactosFiltrados = tipo === 'todos' ? [...contactos] : contactos.filter(c=>c.tipo===tipo)
+    renderContactos()
+  }
+
+  function renderContactos() {
+    const EMOJIS = { dentista:'🦷', psicologo:'🧠', estetica:'✂️', veterinaria:'🐾', nutriologo:'🥗', negocio:'🏪' }
+    const COLORS = { dentista:'#dbeafe', psicologo:'#f3e8ff', estetica:'#fce7f3', veterinaria:'#d1fae5', nutriologo:'#fef3c7', negocio:'#f1f5f9' }
+    document.getElementById('contacts-count').textContent = `${contactosFiltrados.length} contactos`
+    const sel = contactosFiltrados.filter(c=>c.seleccionado).length
+    document.getElementById('selected-count').textContent = `${sel} seleccionados`
+    document.getElementById('stat-seleccionados').textContent = sel
+    document.getElementById('contacts-list').innerHTML = contactosFiltrados.map((c) => `
+      <div class="contact-row">
+        <input type="checkbox" ${c.seleccionado?'checked':''} onchange="toggleContacto(${contactos.indexOf(c)},this.checked)" style="width:16px;height:16px;cursor:pointer">
+        <div class="contact-avatar" style="background:${COLORS[c.tipo]||'#f1f5f9'}">${EMOJIS[c.tipo]||'🏪'}</div>
+        <div class="contact-info"><div class="contact-name">${c.nombre}</div><div class="contact-phone">${c.telefono}</div></div>
+        <div class="contact-type">${c.tipo}</div>
+      </div>`).join('')
+  }
+
+  function toggleContacto(idx, checked) {
+    contactos[idx].seleccionado = checked
+    const sel = contactos.filter(c=>c.seleccionado).length
+    document.getElementById('selected-count').textContent = `${sel} seleccionados`
+    document.getElementById('stat-seleccionados').textContent = sel
+  }
+
+  function selectAll(checked) { contactosFiltrados.forEach(c=>c.seleccionado=checked); renderContactos() }
+
+  function selectTemplate(idx, btn) {
+    templateActual = idx
+    document.querySelectorAll('.template-btn').forEach(b=>b.classList.remove('active'))
+    if (btn) btn.classList.add('active')
+    document.getElementById('custom-msg-group').style.display = idx===3?'block':'none'
+    actualizarPreview()
+  }
+
+  function actualizarPreview() {
+    let msg = templateActual===3 ? document.getElementById('custom-message').value : TEMPLATES[templateActual]
+    document.getElementById('message-preview').textContent = msg.replace(/\{\{nombre\}\}/g,'Clínica García') || 'Escribe tu mensaje...'
+  }
+
+  async function enviarCampana() {
+    const seleccionados = contactos.filter(c=>c.seleccionado)
+    if (seleccionados.length===0) { alert('Selecciona al menos un contacto'); return }
+    let msg = templateActual===3 ? document.getElementById('custom-message').value : TEMPLATES[templateActual]
+    if (!msg.trim()) { alert('Selecciona o escribe un mensaje'); return }
+    if (!confirm(`¿Enviar mensaje a ${seleccionados.length} contactos?`)) return
+    enviados=0; errores=0
+    document.getElementById('stat-enviados').textContent=0
+    document.getElementById('stat-errores').textContent=0
+    document.getElementById('send-log').innerHTML=''
+    document.getElementById('progress-wrap').style.display='block'
+    document.getElementById('progress-bar').style.width='0%'
+    for (let i=0; i<seleccionados.length; i++) {
+      const c = seleccionados[i]
+      const mensajeFinal = msg.replace(/\{\{nombre\}\}/g, c.nombre)
+      try {
+        const res = await fetch(`${API}/campaigns/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ to: c.telefono, message: mensajeFinal })
+        })
+        const logEl = document.getElementById('send-log')
+        if (res.ok) { enviados++; logEl.innerHTML=`<div class="log-item log-ok">✓ ${c.nombre}</div>`+logEl.innerHTML }
+        else { errores++; logEl.innerHTML=`<div class="log-item log-err">✗ ${c.nombre} — error</div>`+logEl.innerHTML }
+      } catch(e) { errores++ }
+      document.getElementById('stat-enviados').textContent=enviados
+      document.getElementById('stat-errores').textContent=errores
+      document.getElementById('progress-bar').style.width=`${((i+1)/seleccionados.length)*100}%`
+      await new Promise(r=>setTimeout(r,1000))
+    }
+    document.getElementById('send-log').innerHTML=`<div class="log-item" style="font-weight:600">✅ Campaña terminada: ${enviados} enviados, ${errores} errores</div>`+document.getElementById('send-log').innerHTML
   }
 
   function abrirModalEmpresa() {
-    document.getElementById('input-name').value = ''
-    document.getElementById('input-phone').value = ''
-    document.getElementById('input-prompt').value = ''
-    document.getElementById('input-username').value = ''
-    document.getElementById('input-password').value = ''
+    ['input-name','input-phone','input-prompt','input-username','input-password'].forEach(id=>document.getElementById(id).value='')
     document.getElementById('modal-empresa').classList.add('active')
   }
 
   function abrirModalCita() {
-    editingCitaId = null
-    document.getElementById('modal-cita-titulo').textContent = 'Nueva cita'
-    document.getElementById('btn-cancelar-cita').style.display = 'none'
-    document.getElementById('cita-fecha').value = new Date().toISOString().split('T')[0]
+    editingCitaId=null
+    document.getElementById('modal-cita-titulo').textContent='Nueva cita'
+    document.getElementById('btn-cancelar-cita').style.display='none'
+    document.getElementById('cita-fecha').value=new Date().toISOString().split('T')[0]
     document.getElementById('modal-cita').classList.add('active')
-  }
-
-  function abrirModalCitaFecha(fecha, hora) {
-    abrirModalCita()
-    document.getElementById('cita-fecha').value = fecha
-    document.getElementById('cita-hora').value = hora
   }
 
   async function editarCita(id) {
     for (const emp of empresas) {
       const res = await fetch(`${API}/appointments/${emp.id}`, { headers: { 'Authorization': `Bearer ${token}` } })
       const citas = await res.json()
-      const cita = citas.find(c => c.id === id)
+      const cita = citas.find(c=>c.id===id)
       if (cita) {
-        editingCitaId = id
-        document.getElementById('modal-cita-titulo').textContent = 'Editar cita'
-        document.getElementById('btn-cancelar-cita').style.display = 'block'
-        document.getElementById('cita-empresa').value = cita.companyId
-        document.getElementById('cita-nombre').value = cita.clientName
-        document.getElementById('cita-telefono').value = cita.clientPhone
-        document.getElementById('cita-fecha').value = new Date(cita.date).toISOString().split('T')[0]
-        document.getElementById('cita-hora').value = cita.time
-        document.getElementById('cita-servicio').value = cita.service
-        document.getElementById('cita-notas').value = cita.notes || ''
+        editingCitaId=id
+        document.getElementById('modal-cita-titulo').textContent='Editar cita'
+        document.getElementById('btn-cancelar-cita').style.display='block'
+        document.getElementById('cita-empresa').value=cita.companyId
+        document.getElementById('cita-nombre').value=cita.clientName
+        document.getElementById('cita-telefono').value=cita.clientPhone
+        document.getElementById('cita-fecha').value=new Date(cita.date).toISOString().split('T')[0]
+        document.getElementById('cita-hora').value=cita.time
+        document.getElementById('cita-servicio').value=cita.service
+        document.getElementById('cita-notas').value=cita.notes||''
         document.getElementById('modal-cita').classList.add('active')
         return
       }
@@ -517,42 +588,42 @@
   function cerrarModal(id) { document.getElementById(id).classList.remove('active') }
 
   async function guardarEmpresa() {
-    const name = document.getElementById('input-name').value
-    const type = document.getElementById('input-type').value
-    const phone = document.getElementById('input-phone').value
-    const prompt = document.getElementById('input-prompt').value
-    const username = document.getElementById('input-username').value
-    const password = document.getElementById('input-password').value
-    if (!name || !phone || !prompt || !username || !password) { alert('Llena todos los campos'); return }
+    const name=document.getElementById('input-name').value
+    const type=document.getElementById('input-type').value
+    const phone=document.getElementById('input-phone').value
+    const prompt=document.getElementById('input-prompt').value
+    const username=document.getElementById('input-username').value
+    const password=document.getElementById('input-password').value
+    if (!name||!phone||!prompt||!username||!password) { alert('Llena todos los campos'); return }
     await fetch(`${API}/companies`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ name, type, phone, prompt, username, password })
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body:JSON.stringify({name,type,phone,prompt,username,password})
     })
     cerrarModal('modal-empresa')
     cargarEmpresas()
   }
 
   async function guardarCita() {
-    const companyId = document.getElementById('cita-empresa').value
-    const clientName = document.getElementById('cita-nombre').value
-    const clientPhone = document.getElementById('cita-telefono').value
-    const date = document.getElementById('cita-fecha').value
-    const time = document.getElementById('cita-hora').value
-    const service = document.getElementById('cita-servicio').value
-    const notes = document.getElementById('cita-notas').value
-    if (!companyId || !clientName || !date) { alert('Llena los campos obligatorios'); return }
+    const companyId=document.getElementById('cita-empresa').value
+    const clientName=document.getElementById('cita-nombre').value
+    const clientPhone=document.getElementById('cita-telefono').value
+    const date=document.getElementById('cita-fecha').value
+    const time=document.getElementById('cita-hora').value
+    const service=document.getElementById('cita-servicio').value
+    const notes=document.getElementById('cita-notas').value
+    if (!companyId||!clientName||!date) { alert('Llena los campos obligatorios'); return }
     if (editingCitaId) {
       await fetch(`${API}/appointments/${editingCitaId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ clientName, date, time, service, notes })
+        method:'PUT',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+        body:JSON.stringify({clientName,date,time,service,notes})
       })
     } else {
       await fetch(`${API}/appointments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ companyId, clientPhone, clientName, date, time, service, notes })
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+        body:JSON.stringify({companyId,clientPhone,clientName,date,time,service,notes})
       })
     }
     cerrarModal('modal-cita')
@@ -560,29 +631,24 @@
   }
 
   async function cancelarCitaActual() {
-    if (!editingCitaId || !confirm('¿Cancelar esta cita?')) return
-    await fetch(`${API}/appointments/${editingCitaId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
+    if (!editingCitaId||!confirm('¿Cancelar esta cita?')) return
+    await fetch(`${API}/appointments/${editingCitaId}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}})
     cerrarModal('modal-cita')
     cargarAgenda()
   }
 
-  async function toggleEmpresa(id, active) {
-    await fetch(`${API}/companies/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ active: !active })
-    })
+  async function toggleEmpresa(id,active) {
+    await fetch(`${API}/companies/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify({active:!active})})
     cargarEmpresas()
   }
 
   async function eliminarEmpresa(id) {
     if (!confirm('¿Eliminar empresa?')) return
-    await fetch(`${API}/companies/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } })
+    await fetch(`${API}/companies/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${token}`}})
     cargarEmpresas()
   }
+
+  actualizarPreview()
 </script>
 </body>
 </html>
