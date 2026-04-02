@@ -7,55 +7,44 @@ const router = Router()
 
 async function sendWhatsAppMessage(to: string, message: string) {
   const apiKey = process.env.WASENDER_API_KEY
-  const url = 'https://wasenderapi.com/api/send-message'
-
-  const response = await fetch(url, {
+  const response = await fetch('https://wasenderapi.com/api/send-message', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`
     },
-    body: JSON.stringify({
-      to: to,
-      text: message
-    })
+    body: JSON.stringify({ to: to, text: message })
   })
-
   const data = await response.json()
   console.log('WasenderAPI response:', data)
   return data
 }
 
 router.post('/', async (req: Request, res: Response) => {
-  // Responder inmediatamente a WasenderAPI
   res.status(200).json({ status: 'ok' })
 
   try {
     const body = req.body
     console.log('Webhook recibido:', JSON.stringify(body))
 
-    // Extraer datos del formato WasenderAPI
-    const message = body?.data?.message
-    const from = body?.data?.from || body?.data?.sender
-    const text = body?.data?.text?.body || body?.data?.message?.conversation || body?.data?.body || ''
-    const type = body?.data?.type || body?.type
+    // Extraer datos del formato correcto de WasenderAPI
+    const messages = body?.data?.messages
+    const text = messages?.messageBody || messages?.message?.conversation || ''
+    const from = messages?.key?.cleanedSenderPn || messages?.key?.senderPn || ''
+    const fromMe = messages?.key?.fromMe || false
 
-    // Solo procesar mensajes de texto entrantes
     if (!text || !from) {
       console.log('Mensaje sin texto o sin remitente, ignorando')
       return
     }
 
-    // Ignorar mensajes enviados por nosotros
-    if (body?.data?.fromMe === true) {
+    if (fromMe) {
       console.log('Mensaje propio, ignorando')
       return
     }
 
     console.log(`Mensaje de ${from}: ${text}`)
 
-    // Buscar empresa activa — como WasenderAPI no tiene multi-número por webhook
-    // usamos la primera empresa activa o buscamos por número de sesión
     const company = await prisma.company.findFirst({
       where: { active: true }
     })
@@ -65,7 +54,6 @@ router.post('/', async (req: Request, res: Response) => {
       return
     }
 
-    // Detectar intención
     const intent = await detectAppointmentIntent(text)
     console.log(`Intención detectada: ${intent}`)
 
@@ -73,19 +61,10 @@ router.post('/', async (req: Request, res: Response) => {
 
     if (intent === 'AGENDAR') {
       const data = await extractAppointmentData(text, company.type)
-
       if (data.date && data.time) {
         const slots = await getAvailableSlots(company.id, data.date)
-
         if (slots.includes(data.time)) {
-          await createAppointment(
-            company.id,
-            from,
-            data.clientName || 'Cliente',
-            data.date,
-            data.time,
-            data.service || 'Consulta'
-          )
+          await createAppointment(company.id, from, data.clientName || 'Cliente', data.date, data.time, data.service || 'Consulta')
           responseMessage = `✅ ¡Cita confirmada!\n\n📅 Fecha: ${data.date}\n⏰ Hora: ${data.time}\n💼 Servicio: ${data.service || 'Consulta'}\n\nTe esperamos. ¡Recuerda llegar 5 minutos antes!`
         } else {
           const disponibles = slots.slice(0, 5).join(', ')
@@ -104,10 +83,7 @@ router.post('/', async (req: Request, res: Response) => {
         responseMessage = 'No encontré citas activas para cancelar.'
       } else {
         const cita = citas[0]
-        await prisma.appointment.update({
-          where: { id: cita.id },
-          data: { status: 'cancelled' }
-        })
+        await prisma.appointment.update({ where: { id: cita.id }, data: { status: 'cancelled' } })
         responseMessage = `✅ Tu cita del ${cita.date.toISOString().split('T')[0]} a las ${cita.time} ha sido cancelada.`
       }
 
@@ -124,17 +100,10 @@ router.post('/', async (req: Request, res: Response) => {
       responseMessage = await getAIResponse(text, from, company.prompt)
     }
 
-    // Guardar conversación
     await prisma.conversation.create({
-      data: {
-        companyId: company.id,
-        from: from,
-        message: text,
-        response: responseMessage
-      }
+      data: { companyId: company.id, from, message: text, response: responseMessage }
     })
 
-    // Enviar respuesta
     await sendWhatsAppMessage(from, responseMessage)
     console.log(`Respuesta enviada a ${from}: ${responseMessage}`)
 
