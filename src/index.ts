@@ -6,6 +6,7 @@ import webhookRouter from './routes/webhook'
 import companiesRouter from './routes/companies'
 import authRouter from './routes/auth'
 import appointmentsRouter from './routes/appointments'
+import campaignsRouter from './routes/campaigns'
 import { authMiddleware } from './middleware/auth'
 
 dotenv.config()
@@ -30,6 +31,7 @@ app.use('/auth/client-login', loginLimiter)
 app.use('/auth', authRouter)
 app.use('/companies', authMiddleware, companiesRouter)
 app.use('/appointments', authMiddleware, appointmentsRouter)
+app.use('/campaigns', authMiddleware, campaignsRouter)
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'))
