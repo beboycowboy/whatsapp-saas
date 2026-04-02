@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express'
+import bcrypt from 'bcryptjs'
 import prisma from '../services/database'
 
 const router = Router()
@@ -6,6 +7,7 @@ const router = Router()
 router.get('/', async (req: Request, res: Response) => {
   try {
     const companies = await prisma.company.findMany({
+      where: { deletedAt: null },
       orderBy: { createdAt: 'desc' }
     })
     res.json(companies)
@@ -17,11 +19,12 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
   try {
     const { name, type, phone, prompt, username, password } = req.body
+    const hash = await bcrypt.hash(password || 'cambiar123', 10)
     const company = await prisma.company.create({
-      data: { 
+      data: {
         name, type, phone, prompt,
         username: username || name.toLowerCase().replace(/\s/g, ''),
-        password: password || 'cambiar123'
+        password: hash
       }
     })
     res.json(company)
@@ -34,9 +37,13 @@ router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const { name, type, phone, prompt, active, username, password } = req.body
+    const data: any = { name, type, phone, prompt, active, username }
+    if (password) {
+      data.password = await bcrypt.hash(password, 10)
+    }
     const company = await prisma.company.update({
       where: { id },
-      data: { name, type, phone, prompt, active, username, password }
+      data
     })
     res.json(company)
   } catch (error) {
@@ -47,9 +54,11 @@ router.put('/:id', async (req: Request, res: Response) => {
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    await prisma.conversation.deleteMany({ where: { companyId: id } })
-    await prisma.appointment.deleteMany({ where: { companyId: id } })
-    await prisma.company.delete({ where: { id } })
+    // Soft delete — no borramos, solo marcamos como eliminado
+    await prisma.company.update({
+      where: { id },
+      data: { deletedAt: new Date() }
+    })
     res.json({ message: 'Empresa eliminada' })
   } catch (error: any) {
     console.error('Error eliminando empresa:', error.message)

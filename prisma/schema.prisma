@@ -8,42 +8,45 @@ datasource db {
 }
 
 model Company {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String
   type      String
-  phone     String   @unique
-  prompt    String   @db.Text
-  active    Boolean  @default(true)
-  username  String   @unique
+  phone     String    @unique
+  prompt    String    @db.Text
+  active    Boolean   @default(true)
+  username  String    @unique
   password  String
-  createdAt DateTime @default(now())
-  
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
   appointments  Appointment[]
   conversations Conversation[]
 }
 
 model Conversation {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   companyId String
   from      String
-  message   String   @db.Text
-  response  String   @db.Text
-  createdAt DateTime @default(now())
-  
+  message   String    @db.Text
+  response  String    @db.Text
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
   company Company @relation(fields: [companyId], references: [id])
 }
 
 model Appointment {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   companyId   String
   clientPhone String
   clientName  String
   date        DateTime
   time        String
   service     String
-  status      String   @default("confirmed")
-  notes       String?  @db.Text
-  createdAt   DateTime @default(now())
-  
+  status      String    @default("confirmed")
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+
   company Company @relation(fields: [companyId], references: [id])
 }
